@@ -3,6 +3,7 @@ package com.rulhouse.ruler.feature_node.presentation.ruler
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.google.accompanist.systemuicontroller.SystemUiController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

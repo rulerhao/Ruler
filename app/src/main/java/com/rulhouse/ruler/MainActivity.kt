@@ -26,6 +26,7 @@ import android.util.Log
 import androidx.compose.material.Button
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -39,7 +40,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
         setContent {
             RulerTheme() {
                 Surface(
@@ -53,13 +58,16 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = Screen.RulerScreen.route
                         ) {
-                            RulerScreen(
-                                navController = navController
-                            )
+                            RulerScreen()
                         }
                     }
                 }
             }
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 }
