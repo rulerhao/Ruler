@@ -5,7 +5,7 @@ buildscript {
         coroutines_version = '1.5.2'
         accompanist_version = '0.22.0-rc'
         hiltVersion = '2.40.5'
-        roomVersion = "2.4.0"
+        roomVersion = '2.4.1'
     }
     repositories {
         google()
