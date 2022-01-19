@@ -25,10 +25,6 @@ fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
     val rulerState = viewModel.isSystemBarShow.value
-
-    val systemUiController = rememberSystemUiController()
-    systemUiController.isSystemBarsVisible = rulerState.isSystemBarVisible
-
     Box {
         Image(
             painterResource(id = R.drawable.ic_launcher_background),
