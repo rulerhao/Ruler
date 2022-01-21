@@ -1,6 +1,8 @@
 package com.rulhouse.ruler
 
 import android.content.pm.ActivityInfo
+import android.graphics.Insets
+import android.graphics.Rect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,18 +19,24 @@ import com.rulhouse.ruler.feature_node.presentation.ruler.RulerScreen
 import com.rulhouse.ruler.feature_node.presentation.ruler.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
 import android.os.Build
+import android.util.Size
+import android.view.WindowInsets
+
+import android.view.WindowMetrics
+
+
+
+
+
+
+
+
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        var screenDensity = resources.displayMetrics.density
-        var width = resources.displayMetrics.widthPixels
-        var height = resources.displayMetrics.heightPixels
-        Log.d("testDensity", "Density = $screenDensity, width = $width. height = $height")
-
-//        setOrientation()
         setSystemBar()
 //
         setContent {
@@ -50,6 +58,39 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
+            // Gets all excluding insets
+            // Gets all excluding insets
+            val metrics = windowManager.currentWindowMetrics
+            val windowInsets = metrics.windowInsets
+//            val insets: Insets = windowInsets.getInsetsIgnoringVisibility(
+//                WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars()
+//            )
+            val insets: Insets = windowInsets.getInsetsIgnoringVisibility(
+                WindowInsets.Type.systemBars()
+            )
+            val insetsWidth = insets.right + insets.left
+            val insetsHeight = insets.top + insets.bottom
+            Log.d("testDensity", "insetsWidth = $insetsWidth, insetsHeight = $insetsHeight")
+            // Legacy size that Display#getSize reports
+
+            // Legacy size that Display#getSize reports
+            val bounds: Rect = metrics.bounds
+            val legacySize = Size(
+                bounds.width() - insetsWidth,
+                bounds.height() - insetsHeight
+            )
+            Log.d("testDensity", "width = ${legacySize.width}, height = ${legacySize.height}")
+            Log.d("testDensity", "bounds.width() = ${bounds.width()}, bounds.height() = ${bounds.height()}")
+        } else {
+        }
+
+        var screenDensity = resources.displayMetrics.density
+        var dotsPerInches = resources.displayMetrics.densityDpi
+        var widthPixels = resources.displayMetrics.widthPixels
+        var heightPixels = resources.displayMetrics.heightPixels
+        Log.d("testDensity", "Dots per inches = $dotsPerInches, Density = $screenDensity, width = $widthPixels. height = $heightPixels")
 
     }
 
