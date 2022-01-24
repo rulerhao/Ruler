@@ -1,5 +1,6 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
+import android.graphics.Point
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,43 +24,39 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.rulhouse.ruler.R
+import com.rulhouse.ruler.activity.ScreenMethods
 import com.rulhouse.ruler.ui.theme.RulerTheme
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @Composable
 fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
     val rulerState = viewModel.isSystemBarShow.value
+
+    val context = LocalContext.current
+//    context.resources.displayMetrics.
+//    Log.d("testDensity", "dpi = ${ScreenMethods.getDpi(context)}")
     Box {
-        Image(
-            painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = "...",
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier.fillMaxSize()
-        )
+//        Image(
+//            painterResource(id = R.drawable.ic_launcher_background),
+//            contentDescription = "...",
+//            contentScale = ContentScale.FillBounds,
+//            modifier = Modifier.fillMaxSize()
+//        )
         Column(
         ) {
-            Button(
-                modifier = Modifier
-                    .padding(20.dp),
-                onClick = {
-                    viewModel.onEvent(RulerEvent.ToggleSystemBar)
-                }
-            ) {
-                Text(text = rulerState.toString())
-            }
+//            Button(
+//                modifier = Modifier
+//                    .padding(20.dp),
+//                onClick = {
+//                    viewModel.onEvent(RulerEvent.ToggleSystemBar)
+//                }
+//            ) {
+//                Text(text = rulerState.toString())
+//            }
         }
     }
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-
-        Log.d("testDensity", "canvasWidth = $canvasWidth, canvasHeight = $canvasHeight")
-
-        drawLine(
-            start = Offset(x = canvasWidth, y = 0f),
-            end = Offset(x = 0f, y = canvasHeight),
-            color = Color.Blue
-        )
-    }
+    ScaleScreen()
 }

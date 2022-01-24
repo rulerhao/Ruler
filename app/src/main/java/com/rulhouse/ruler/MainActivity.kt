@@ -2,6 +2,7 @@ package com.rulhouse.ruler
 
 import android.content.pm.ActivityInfo
 import android.graphics.Insets
+import android.graphics.Point
 import android.graphics.Rect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,25 +21,24 @@ import com.rulhouse.ruler.feature_node.presentation.ruler.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
 import android.os.Build
 import android.util.Size
+import android.view.View
 import android.view.WindowInsets
 
-import android.view.WindowMetrics
-
-
-
-
-
-
-
-
+import kotlinx.coroutines.*
+import android.util.DisplayMetrics
+import com.rulhouse.ruler.activity.ScreenMethods
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setSystemBar()
-//
+        hindSystemBar()
+
+        addSystemUIListener()
+
         setContent {
             RulerTheme() {
                 Surface(
@@ -58,40 +58,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
-            // Gets all excluding insets
-            // Gets all excluding insets
-            val metrics = windowManager.currentWindowMetrics
-            val windowInsets = metrics.windowInsets
-//            val insets: Insets = windowInsets.getInsetsIgnoringVisibility(
-//                WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars()
-//            )
-            val insets: Insets = windowInsets.getInsetsIgnoringVisibility(
-                WindowInsets.Type.systemBars()
-            )
-            val insetsWidth = insets.right + insets.left
-            val insetsHeight = insets.top + insets.bottom
-            Log.d("testDensity", "insetsWidth = $insetsWidth, insetsHeight = $insetsHeight")
-            // Legacy size that Display#getSize reports
-
-            // Legacy size that Display#getSize reports
-            val bounds: Rect = metrics.bounds
-            val legacySize = Size(
-                bounds.width() - insetsWidth,
-                bounds.height() - insetsHeight
-            )
-            Log.d("testDensity", "width = ${legacySize.width}, height = ${legacySize.height}")
-            Log.d("testDensity", "bounds.width() = ${bounds.width()}, bounds.height() = ${bounds.height()}")
-        } else {
+            val width = windowManager.currentWindowMetrics.bounds.width()
+            val height = windowManager.currentWindowMetrics.bounds.height()
         }
+        else {
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            val height = displayMetrics.heightPixels
+            val width = displayMetrics.widthPixels
+        }
+        val screenDensity = resources.displayMetrics.density
+        val dotsPerInch = resources.displayMetrics.densityDpi
+        Log.d("testDensity", "screenDensity = $screenDensity, dotsPerInch = $dotsPerInch")
 
-        var screenDensity = resources.displayMetrics.density
-        var dotsPerInches = resources.displayMetrics.densityDpi
-        var widthPixels = resources.displayMetrics.widthPixels
-        var heightPixels = resources.displayMetrics.heightPixels
-        Log.d("testDensity", "Dots per inches = $dotsPerInches, Density = $screenDensity, width = $widthPixels. height = $heightPixels")
-
+        Log.d("testDensity", "real dpi = ${ScreenMethods.getPpi(this)}")
     }
 
     override fun onResume() {
@@ -122,6 +104,31 @@ class MainActivity : ComponentActivity() {
         } else {
             val metrics = application.resources.displayMetrics
             metrics.density
+        }
+    }
+
+    private fun setShowSystemUi(show: Boolean) {
+        WindowCompat.setDecorFitsSystemWindows(window, show)
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        if (show) {
+            controller.show(WindowInsetsCompat.Type.systemBars())
+        } else {
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
+
+    private fun addSystemUIListener () {
+        window.decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0)
+                hindSystemBar()
+        }
+    }
+
+    private fun hindSystemBar () = runBlocking {
+        launch {
+            delay(1000L)
+            setShowSystemUi(false)
         }
     }
 }
