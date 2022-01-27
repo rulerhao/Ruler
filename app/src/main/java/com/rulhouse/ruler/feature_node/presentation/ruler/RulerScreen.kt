@@ -33,30 +33,29 @@ import kotlin.math.sqrt
 fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-    val rulerState = viewModel.isSystemBarShow.value
-
     val context = LocalContext.current
-//    context.resources.displayMetrics.
-//    Log.d("testDensity", "dpi = ${ScreenMethods.getDpi(context)}")
     Box {
-//        Image(
-//            painterResource(id = R.drawable.ic_launcher_background),
-//            contentDescription = "...",
-//            contentScale = ContentScale.FillBounds,
-//            modifier = Modifier.fillMaxSize()
-//        )
+        ScaleScreen()
         Column(
         ) {
-//            Button(
-//                modifier = Modifier
-//                    .padding(20.dp),
-//                onClick = {
-//                    viewModel.onEvent(RulerEvent.ToggleSystemBar)
-//                }
-//            ) {
-//                Text(text = rulerState.toString())
-//            }
+            Button(
+                modifier = Modifier
+                    .padding(20.dp),
+                onClick = {
+                    viewModel.onEvent(RulerEvent.SetScale(RulerScale.Inch))
+                }
+            ) {
+                Text(text = "toInch")
+            }
+            Button(
+                modifier = Modifier
+                    .padding(20.dp),
+                onClick = {
+                    viewModel.onEvent(RulerEvent.SetScale(RulerScale.Centimeter))
+                }
+            ) {
+                Text(text = "toCM")
+            }
         }
     }
-    ScaleScreen()
 }
