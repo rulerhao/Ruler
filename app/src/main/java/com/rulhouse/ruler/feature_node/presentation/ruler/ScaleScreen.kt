@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.*
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
@@ -37,15 +38,22 @@ fun ScaleScreen(
     }
 
     LaunchedEffect(animateFloat) {
-        animateFloat.animateTo(
-            targetValue = 0f,
-            animationSpec = keyframes {
-                durationMillis = 2000
-                0.0f at 0 // for 0-15 ms
-                1f at durationMillis / 2 // for 15-75 ms
-                0f at durationMillis // ms
+        viewModel.eventFlow.collectLatest { event ->
+            when(event) {
+                is RulerUiEvent.SetScale -> {
+                    animateFloat.animateTo(
+                        targetValue = 0f,
+                        animationSpec = keyframes {
+                            durationMillis = 1000
+                            0.0f at 0 // for 0-15 ms
+                            1f at durationMillis / 2 // for 15-75 ms
+//                            viewModel.onEvent(RulerEvent.SetScale(RulerScale.Inch))
+                            0f at durationMillis // ms
+                        }
+                    )
+                }
             }
-        )
+        }
     }
 
     Canvas(
