@@ -3,7 +3,6 @@ package com.rulhouse.ruler.feature_node.presentation.ruler
 import android.graphics.*
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -14,6 +13,7 @@ import com.rulhouse.ruler.activity.ScreenMethods
 import android.graphics.PorterDuff
 
 import android.graphics.PorterDuffXfermode
+import android.icu.number.Scale
 
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.LaunchedEffect
@@ -40,22 +40,27 @@ fun ScaleScreen(
     LaunchedEffect(animateFloat) {
         viewModel.eventFlow.collectLatest { event ->
             when(event) {
-                is RulerUiEvent.SetScale -> {
+                is RulerEvent.StartChangeScaleAnimation -> {
+                    animateFloat.animateTo(
+                        targetValue = 1f,
+                        animationSpec = keyframes {
+                            durationMillis = 500
+                            0f at 0
+                            1f at durationMillis
+                        }
+                    )
                     animateFloat.animateTo(
                         targetValue = 0f,
                         animationSpec = keyframes {
-                            durationMillis = 1000
-                            0.0f at 0 // for 0-15 ms
-                            1f at durationMillis / 2 // for 15-75 ms
-//                            viewModel.onEvent(RulerEvent.SetScale(RulerScale.Inch))
-                            0f at durationMillis // ms
+                            durationMillis = 500
+                            1f at 0
+                            0f at durationMillis
                         }
                     )
                 }
             }
         }
     }
-
     Canvas(
         modifier = Modifier
             .fillMaxSize(),

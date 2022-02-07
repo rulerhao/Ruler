@@ -4,7 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.systemuicontroller.SystemUiController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -20,7 +19,7 @@ class RulerViewModel @Inject constructor(
     val lengthScale: State<RulerState> = _lengthScale
 
     // Flow
-    private val _eventFlow = MutableSharedFlow<RulerUiEvent>()
+    private val _eventFlow = MutableSharedFlow<RulerEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     fun onEvent(event: RulerEvent) {
@@ -31,7 +30,7 @@ class RulerViewModel @Inject constructor(
                         scale = event.scale
                     )
                     _eventFlow.emit(
-                        RulerUiEvent.SetScale(
+                        RulerEvent.StartChangeScaleAnimation(
                             scale = event.scale
                         )
                     )
