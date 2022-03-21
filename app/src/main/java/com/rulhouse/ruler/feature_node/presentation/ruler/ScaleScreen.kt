@@ -58,6 +58,7 @@ fun ScaleScreen(
                         }
                     )
                 }
+                else -> {}
             }
         }
     }
@@ -67,13 +68,11 @@ fun ScaleScreen(
     ) {
         drawIntoCanvas { canvas ->
             val color1: Int = 0xffedb879.toInt()
-            val color2: Int = 0xff1979a9.toInt()
             val color3: Int = 0xffcce7e8.toInt()
-            val color4: Int = 0xff44bcd8.toInt()
 
             val paint = Paint()
 
-            paint.color = color1.toInt()
+            paint.color = color1
             canvas.nativeCanvas.drawArc(
                 size.width * 1 / 2 - size.width * animateFloat.value,
                 size.height * 1 / 2 - size.height * animateFloat.value,
@@ -116,7 +115,8 @@ fun ScaleScreen(
                         val location = i * ppi
                         bitmapCanvas.drawLine(
                             location,
-                            0f,location,
+                            0f,
+                            location,
                             100f,
                             paint)
                     }
@@ -125,7 +125,7 @@ fun ScaleScreen(
 
             val overLapXfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
             paint.xfermode = overLapXfermode
-            paint.color = color3.toInt()
+            paint.color = color3
             bitmapCanvas.drawArc(
                 size.width * 1 / 2 - size.width * animateFloat.value,
                 size.height * 1 / 2 - size.height * animateFloat.value,
