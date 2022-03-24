@@ -36,6 +36,7 @@ fun RulerScreen(
     val context = LocalContext.current
     Box {
         ScaleScreen()
+        GestureScreen()
         Column(
         ) {
             Button(
