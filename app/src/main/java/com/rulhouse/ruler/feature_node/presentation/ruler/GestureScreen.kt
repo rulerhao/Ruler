@@ -1,6 +1,5 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -27,9 +26,19 @@ fun GestureScreen(
     val ACTION_MOVE = 2
     val ACTION_UP = 3
 
-    val arrowPath: Path = remember { Path() }
-    var startPosition = Offset.Unspecified
-    var endPosition = Offset.Unspecified
+    val linePath = mutableListOf(
+        Path(),
+        Path()
+    )
+    val lineStartPosition = mutableListOf(
+        Offset.Unspecified,
+        Offset.Unspecified
+    )
+    val lineEndPosition = mutableListOf(
+        Offset.Unspecified,
+        Offset.Unspecified
+    )
+    var lineIndex = 0
 
     val path = remember { Path() }
     var motionEvent by remember { mutableStateOf(ACTION_IDLE) }
@@ -44,16 +53,19 @@ fun GestureScreen(
                     awaitFirstDown().also {
                         motionEvent = ACTION_DOWN
                         currentPosition = it.position
-                        startPosition = it.position
+                        lineStartPosition[lineIndex] = it.position
                     }
 
                     do {
                         val event: PointerEvent = awaitPointerEvent()
                         motionEvent = ACTION_MOVE
                         currentPosition = event.changes.first().position
-                        endPosition = event.changes.first().position
+                        lineEndPosition[lineIndex] = event.changes.first().position
                     } while (event.changes.any { it.pressed })
 
+                    lineIndex =
+                        if (lineIndex == 0) 1
+                        else 0
                     motionEvent = ACTION_UP
                 }
             }
@@ -68,8 +80,22 @@ fun GestureScreen(
                 path.lineTo(currentPosition.x, currentPosition.y)
             }
             ACTION_UP -> {
-                arrowPath.moveTo(startPosition.x, startPosition.y)
-                arrowPath.lineTo(endPosition.x, endPosition.y)
+                when(lineIndex) {
+                    0 -> {
+                        1.let {
+                            linePath[it].moveTo(lineStartPosition[it].x, lineStartPosition[it].y)
+                            linePath[it].lineTo(lineEndPosition[it].x, lineEndPosition[it].y)
+                        }
+                    }
+                    1 -> {
+                        linePath[0].reset()
+                        linePath[1].reset()
+                        0.let {
+                            linePath[it].moveTo(lineStartPosition[it].x, lineStartPosition[it].y)
+                            linePath[it].lineTo(lineEndPosition[it].x, lineEndPosition[it].y)
+                        }
+                    }
+                }
                 path.reset()
             }
             else -> Unit
@@ -82,9 +108,25 @@ fun GestureScreen(
                 cap = StrokeCap.Round,
                 join = StrokeJoin.Round)
         )
+//        drawPath(
+//            color = Color.Green,
+//            path = firstLinePath,
+//            style = Stroke(
+//                width = 4.dp.toPx(),
+//                cap = StrokeCap.Round,
+//                join = StrokeJoin.Round)
+//        )
         drawPath(
             color = Color.Green,
-            path = arrowPath,
+            path = linePath[0],
+            style = Stroke(
+                width = 4.dp.toPx(),
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round)
+        )
+        drawPath(
+            color = Color.Yellow,
+            path = linePath[1],
             style = Stroke(
                 width = 4.dp.toPx(),
                 cap = StrokeCap.Round,
