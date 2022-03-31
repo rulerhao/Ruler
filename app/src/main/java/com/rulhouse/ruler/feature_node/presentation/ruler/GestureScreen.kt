@@ -13,14 +13,20 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Preview
 @Composable
 fun GestureScreen(
-
+    viewModel: RulerViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
+    val lengthScale = viewModel.lengthScale
+
     val ACTION_IDLE = 0
     val ACTION_DOWN = 1
     val ACTION_MOVE = 2
@@ -31,13 +37,14 @@ fun GestureScreen(
         Path()
     )
     val lineStartPosition = mutableListOf(
-        Offset.Unspecified,
-        Offset.Unspecified
+        Offset.Zero,
+        Offset.Zero
     )
     val lineEndPosition = mutableListOf(
-        Offset.Unspecified,
-        Offset.Unspecified
+        Offset.Zero,
+        Offset.Zero
     )
+
     var lineIndex = 0
 
     val path = remember { Path() }
@@ -80,7 +87,7 @@ fun GestureScreen(
                 path.lineTo(currentPosition.x, currentPosition.y)
             }
             ACTION_UP -> {
-                when(lineIndex) {
+                when (lineIndex) {
                     0 -> {
                         1.let {
                             linePath[it].moveTo(lineStartPosition[it].x, lineStartPosition[it].y)
@@ -94,6 +101,15 @@ fun GestureScreen(
                             linePath[it].moveTo(lineStartPosition[it].x, lineStartPosition[it].y)
                             linePath[it].lineTo(lineEndPosition[it].x, lineEndPosition[it].y)
                         }
+                        val verticalLines = Calculation.getVerticalPosition(lineStartPosition[0], lineEndPosition[0], lengthScale.value.scale, context)
+                        for (i in verticalLines.indices) {
+                            drawLine(
+                                color = Color.Blue,
+                                start = verticalLines[i][0],
+                                end = verticalLines[i][1],
+                                strokeWidth = 5f
+                            )
+                        }
                     }
                 }
                 path.reset()
@@ -106,23 +122,17 @@ fun GestureScreen(
             style = Stroke(
                 width = 4.dp.toPx(),
                 cap = StrokeCap.Round,
-                join = StrokeJoin.Round)
+                join = StrokeJoin.Round
+            )
         )
-//        drawPath(
-//            color = Color.Green,
-//            path = firstLinePath,
-//            style = Stroke(
-//                width = 4.dp.toPx(),
-//                cap = StrokeCap.Round,
-//                join = StrokeJoin.Round)
-//        )
         drawPath(
             color = Color.Green,
             path = linePath[0],
             style = Stroke(
                 width = 4.dp.toPx(),
                 cap = StrokeCap.Round,
-                join = StrokeJoin.Round)
+                join = StrokeJoin.Round
+            )
         )
         drawPath(
             color = Color.Yellow,
@@ -130,7 +140,15 @@ fun GestureScreen(
             style = Stroke(
                 width = 4.dp.toPx(),
                 cap = StrokeCap.Round,
-                join = StrokeJoin.Round)
+                join = StrokeJoin.Round
+            )
+        )
+
+        drawLine(
+            color = Color.Red,
+            start = lineStartPosition[0],
+            end = lineEndPosition[0],
+            strokeWidth = 5f
         )
     }
 }
