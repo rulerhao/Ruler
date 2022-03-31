@@ -48,6 +48,8 @@ fun GestureScreen(
 
     var lineIndex = 0
 
+    var verticalLines: List<List<Offset>> = ArrayList()
+
     val path = remember { Path() }
     var motionEvent by remember { mutableStateOf(ACTION_IDLE) }
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
@@ -102,15 +104,7 @@ fun GestureScreen(
                             linePath[it].moveTo(lineStartPosition[it].x, lineStartPosition[it].y)
                             linePath[it].lineTo(lineEndPosition[it].x, lineEndPosition[it].y)
                         }
-                        val verticalLines = Calculation.getVerticalUnitPosition(lineStartPosition[0], lineEndPosition[0], lengthScale.value.scale, context)
-                        for (i in verticalLines.indices) {
-                            drawLine(
-                                color = Color.Blue,
-                                start = verticalLines[i][0],
-                                end = verticalLines[i][1],
-                                strokeWidth = 5f
-                            )
-                        }
+                        verticalLines = Calculation.getVerticalUnitPosition(lineStartPosition[0], lineEndPosition[0], lengthScale.value.scale, context)
                     }
                 }
                 path.reset()
@@ -151,5 +145,14 @@ fun GestureScreen(
             end = lineEndPosition[0],
             strokeWidth = 5f
         )
+
+        for (i in verticalLines.indices) {
+            drawLine(
+                color = Color.Blue,
+                start = verticalLines[i][0],
+                end = verticalLines[i][1],
+                strokeWidth = 5f
+            )
+        }
     }
 }
