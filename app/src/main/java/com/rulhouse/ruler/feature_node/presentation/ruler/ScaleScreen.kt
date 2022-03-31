@@ -35,11 +35,6 @@ import kotlinx.coroutines.flow.collectLatest
 fun ScaleScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-    val configuration = LocalConfiguration.current
-
-    val screenHeight = configuration.screenHeightDp.dp
-    val screenWidth = configuration.screenWidthDp.dp
-
     val context = LocalContext.current
 
     val lengthScale = viewModel.lengthScale
@@ -64,19 +59,7 @@ fun ScaleScreen(
         mutableStateOf(500)
     }
 
-    var offsetX by remember { mutableStateOf(0f) }
-    var offsetY by remember { mutableStateOf(0f) }
-
     LaunchedEffect(animateFloat) {
-        val ppi = ScreenMethods.getPpi(context)
-        val ppc = ppi / 2.54
-        Log.d("TestDrag", "ppi = $ppi, ppc = $ppc")
-        Log.d("TestDrag", "screenWidth = $screenWidth, screenHeight = $screenHeight")
-        Log.d("TestDrag", "screenWidth = ${ScreenMethods.convertDpToPixel(screenWidth.value, context)}," +
-                " screenHeight = ${ScreenMethods.convertDpToPixel(screenHeight.value, context)}}")
-        Log.d("TestDrag", "screenWidth = ${ScreenMethods.getWidth(context)}," +
-                " screenHeight = ${ScreenMethods.getHeight(context)}")
-
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is RulerEvent.StartChangeScaleAnimation -> {
