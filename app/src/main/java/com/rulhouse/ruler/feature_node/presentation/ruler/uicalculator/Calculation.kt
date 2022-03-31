@@ -9,7 +9,7 @@ import kotlin.math.sqrt
 
 class Calculation {
     companion object {
-        fun getVerticalPosition(
+        fun getVerticalUnitPosition(
             startPosition: Offset,
             endPosition: Offset,
             rulerScale: RulerScale,

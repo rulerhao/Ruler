@@ -102,7 +102,7 @@ fun GestureScreen(
                             linePath[it].moveTo(lineStartPosition[it].x, lineStartPosition[it].y)
                             linePath[it].lineTo(lineEndPosition[it].x, lineEndPosition[it].y)
                         }
-                        val verticalLines = Calculation.getVerticalPosition(lineStartPosition[0], lineEndPosition[0], lengthScale.value.scale, context)
+                        val verticalLines = Calculation.getVerticalUnitPosition(lineStartPosition[0], lineEndPosition[0], lengthScale.value.scale, context)
                         for (i in verticalLines.indices) {
                             drawLine(
                                 color = Color.Blue,
