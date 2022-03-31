@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalContext
@@ -14,12 +13,21 @@ import android.graphics.PorterDuff
 
 import android.graphics.PorterDuffXfermode
 import android.icu.number.Scale
+import android.util.Log
 
 import androidx.compose.animation.core.*
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.gestures.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rulhouse.ruler.feature_node.presentation.ruler.util.Screen
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -27,6 +35,11 @@ import kotlinx.coroutines.flow.collectLatest
 fun ScaleScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
+    val configuration = LocalConfiguration.current
+
+    val screenHeight = configuration.screenHeightDp.dp
+    val screenWidth = configuration.screenWidthDp.dp
+
     val context = LocalContext.current
 
     val lengthScale = viewModel.lengthScale
@@ -37,9 +50,35 @@ fun ScaleScreen(
         )
     }
 
+    var positionX1 by remember {
+        mutableStateOf(200)
+    }
+    var positionX2 by remember {
+        mutableStateOf(400)
+    }
+
+    var positionY1 by remember {
+        mutableStateOf(300)
+    }
+    var positionY2 by remember {
+        mutableStateOf(500)
+    }
+
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+
     LaunchedEffect(animateFloat) {
+        val ppi = ScreenMethods.getPpi(context)
+        val ppc = ppi / 2.54
+        Log.d("TestDrag", "ppi = $ppi, ppc = $ppc")
+        Log.d("TestDrag", "screenWidth = $screenWidth, screenHeight = $screenHeight")
+        Log.d("TestDrag", "screenWidth = ${ScreenMethods.convertDpToPixel(screenWidth.value, context)}," +
+                " screenHeight = ${ScreenMethods.convertDpToPixel(screenHeight.value, context)}}")
+        Log.d("TestDrag", "screenWidth = ${ScreenMethods.getWidth(context)}," +
+                " screenHeight = ${ScreenMethods.getHeight(context)}")
+
         viewModel.eventFlow.collectLatest { event ->
-            when(event) {
+            when (event) {
                 is RulerEvent.StartChangeScaleAnimation -> {
                     animateFloat.animateTo(
                         targetValue = 1f,
@@ -64,7 +103,29 @@ fun ScaleScreen(
     }
     Canvas(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .clipToBounds()
+            .pointerInput(Unit) {
+            detectDragGestures { change, dragAmount ->
+                change.consumeAllChanges()
+                if (change.position.x > (positionX1 + positionX2) / 2) {
+                    positionX2 += dragAmount.x.toInt()
+                    if (positionX2 > ScreenMethods.getWidth(context)) positionX2 = ScreenMethods.getWidth(context)
+                }
+                else {
+                    positionX1 += dragAmount.x.toInt()
+                    if (positionX1 < 0) positionX1 = 0
+                }
+                if (change.position.y > (positionY1 + positionY2) / 2) {
+                    positionY2 += dragAmount.y.toInt()
+                    if (positionY2 > ScreenMethods.getHeight(context)) positionY2 = ScreenMethods.getHeight(context)
+                }
+                else {
+                    positionY1 += dragAmount.y.toInt()
+                    if (positionY1 < 0) positionY1 = 0
+                }
+            }
+        }
     ) {
         drawIntoCanvas { canvas ->
             val color1: Int = 0xffedb879.toInt()
@@ -97,7 +158,7 @@ fun ScaleScreen(
 
             val ppi = ScreenMethods.getPpi(context)
             val ppc = ppi / 2.54
-            when(lengthScale.value.scale) {
+            when (lengthScale.value.scale) {
                 RulerScale.Centimeter -> {
                     for (i in 0..((size.width / ppc).toInt())) {
                         val location = i * ppc.toFloat()
@@ -118,7 +179,8 @@ fun ScaleScreen(
                             0f,
                             location,
                             100f,
-                            paint)
+                            paint
+                        )
                     }
                 }
             }
@@ -139,6 +201,14 @@ fun ScaleScreen(
 
             paint.xfermode = null
             canvas.nativeCanvas.drawBitmap(testBitmap, 0F, 0F, paint)
+
+            canvas.nativeCanvas.drawRect(
+                positionX1.toFloat(),
+                positionY1.toFloat(),
+                positionX2.toFloat(),
+                positionY2.toFloat(),
+                paint
+            )
         }
     }
 }
