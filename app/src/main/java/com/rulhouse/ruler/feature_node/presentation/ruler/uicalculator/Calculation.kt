@@ -1,9 +1,9 @@
-package com.rulhouse.ruler.feature_node.presentation.ruler
+package com.rulhouse.ruler.feature_node.presentation.ruler.uicalculator
 
 import android.content.Context
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import com.rulhouse.ruler.activity.ScreenMethods
+import com.rulhouse.ruler.feature_node.presentation.ruler.RulerScale
 import kotlin.math.pow
 import kotlin.math.sqrt
 
