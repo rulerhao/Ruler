@@ -12,22 +12,17 @@ import com.rulhouse.ruler.activity.ScreenMethods
 import android.graphics.PorterDuff
 
 import android.graphics.PorterDuffXfermode
-import android.icu.number.Scale
 import android.util.Log
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.gestures.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rulhouse.ruler.feature_node.presentation.ruler.util.Screen
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -43,20 +38,6 @@ fun ScaleScreen(
         Animatable(
             0f
         )
-    }
-
-    var positionX1 by remember {
-        mutableStateOf(200)
-    }
-    var positionX2 by remember {
-        mutableStateOf(400)
-    }
-
-    var positionY1 by remember {
-        mutableStateOf(300)
-    }
-    var positionY2 by remember {
-        mutableStateOf(500)
     }
 
     LaunchedEffect(animateFloat) {
@@ -84,31 +65,61 @@ fun ScaleScreen(
             }
         }
     }
+
+    var positionX1 by remember { mutableStateOf(200) }
+    var positionX2 by remember { mutableStateOf(400) }
+    var positionY1 by remember { mutableStateOf(300) }
+    var positionY2 by remember { mutableStateOf(500) }
+
+    var positionTouchDown = Offset.Unspecified
+    var middlePositionWhenTouchDown = Offset.Unspecified
+
     Canvas(
         modifier = Modifier
             .fillMaxSize()
             .clipToBounds()
             .pointerInput(Unit) {
-            detectDragGestures { change, dragAmount ->
-                change.consumeAllChanges()
-                if (change.position.x > (positionX1 + positionX2) / 2) {
-                    positionX2 += dragAmount.x.toInt()
-                    if (positionX2 > ScreenMethods.getWidth(context)) positionX2 = ScreenMethods.getWidth(context)
-                }
-                else {
-                    positionX1 += dragAmount.x.toInt()
-                    if (positionX1 < 0) positionX1 = 0
-                }
-                if (change.position.y > (positionY1 + positionY2) / 2) {
-                    positionY2 += dragAmount.y.toInt()
-                    if (positionY2 > ScreenMethods.getHeight(context)) positionY2 = ScreenMethods.getHeight(context)
-                }
-                else {
-                    positionY1 += dragAmount.y.toInt()
-                    if (positionY1 < 0) positionY1 = 0
+                detectDragGestures(
+                    onDragStart = {
+                        positionTouchDown = it
+                        middlePositionWhenTouchDown = Offset(
+                            ((positionX1 + positionX2) / 2).toFloat(),
+                            ((positionY1 + positionY2) / 2).toFloat()
+                        )
+                    },
+                    onDragEnd = {
+                        if (positionX1 > positionX2) {
+                            val temp = positionX2
+                            positionX2 = positionX1
+                            positionX1 = temp
+                        }
+                        if (positionY1 > positionY2) {
+                            val temp = positionY2
+                            positionY2 = positionY1
+                            positionY1 = temp
+                        }
+                    }
+                ) { change, dragAmount ->
+                    change.consumeAllChanges()
+
+                    if (positionTouchDown.x > middlePositionWhenTouchDown.x) {
+                        positionX2 += dragAmount.x.toInt()
+                        if (positionX2 > ScreenMethods.getWidth(context)) positionX2 =
+                            ScreenMethods.getWidth(context)
+                    } else {
+                        positionX1 += dragAmount.x.toInt()
+                        if (positionX1 < 0) positionX1 = 0
+                    }
+                    if (positionTouchDown.y > middlePositionWhenTouchDown.y) {
+                        positionY2 += dragAmount.y.toInt()
+                        if (positionY2 > ScreenMethods.getHeight(context)) positionY2 =
+                            ScreenMethods.getHeight(context)
+                    } else {
+                        positionY1 += dragAmount.y.toInt()
+                        if (positionY1 < 0) positionY1 = 0
+                    }
                 }
             }
-        }
     ) {
         drawIntoCanvas { canvas ->
             val color1: Int = 0xffedb879.toInt()
