@@ -1,9 +1,13 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rulhouse.ruler.feature_node.domain.model.InvalidMeasurementException
+import com.rulhouse.ruler.feature_node.domain.model.Measurement
+import com.rulhouse.ruler.feature_node.domain.use_case.MeasurementUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -12,6 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RulerViewModel @Inject constructor(
+    private val measurementUseCases: MeasurementUseCases,
 ) : ViewModel() {
     private val _lengthScale = mutableStateOf(RulerState(
         scale = RulerScale.Centimeter
@@ -22,6 +27,7 @@ class RulerViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<RulerEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private var currentMeasurementId: Int? = null
     fun onEvent(event: RulerEvent) {
         viewModelScope.launch {
             when (event) {
@@ -35,6 +41,31 @@ class RulerViewModel @Inject constructor(
                         )
                     )
                 }
+                is RulerEvent.SaveMeasurement -> {
+                    viewModelScope.launch {
+                        try {
+                            measurementUseCases.addMeasurement(
+                                Measurement(
+                                    title = "Test Title",
+                                    width = 50,
+                                    height = 100,
+                                    timeStamp = System.currentTimeMillis(),
+                                    id = currentMeasurementId
+                                )
+                            )
+                            Log.d("testAddEditNote", "SaveNote noteID = $currentMeasurementId")
+//                            _eventFlow.emit(UiEvent.SaveNote)
+                        }
+                        catch (e: InvalidMeasurementException) {
+//                            _eventFlow.emit(
+//                                UiEvent.ShowSnackbar(
+//                                    message = e.message ?: "Couldn't save note"
+//                                )
+//                            )
+                        }
+                    }
+                }
+                else -> {}
             }
         }
     }

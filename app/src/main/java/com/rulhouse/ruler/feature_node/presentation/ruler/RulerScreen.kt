@@ -33,7 +33,6 @@ import kotlin.math.sqrt
 fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
     Box {
         ScaleScreen()
 //        GestureScreen()
@@ -56,6 +55,15 @@ fun RulerScreen(
                 }
             ) {
                 Text(text = "toCM")
+            }
+            Button(
+                modifier = Modifier
+                    .padding(20.dp),
+                onClick = {
+                    viewModel.onEvent(RulerEvent.SaveMeasurement)
+                }
+            ) {
+                Text(text = "Save Test")
             }
         }
     }
