@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -29,42 +27,50 @@ import com.rulhouse.ruler.ui.theme.RulerTheme
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-    Box {
-        ScaleScreen()
-//        GestureScreen()
-        Column(
-        ) {
-            Button(
-                modifier = Modifier
-                    .padding(20.dp),
-                onClick = {
-                    viewModel.onEvent(RulerEvent.SetScale(RulerScale.Inch))
-                }
-            ) {
-                Text(text = "toInch")
-            }
-            Button(
-                modifier = Modifier
-                    .padding(20.dp),
-                onClick = {
-                    viewModel.onEvent(RulerEvent.SetScale(RulerScale.Centimeter))
-                }
-            ) {
-                Text(text = "toCM")
-            }
-            Button(
-                modifier = Modifier
-                    .padding(20.dp),
-                onClick = {
-                    viewModel.onEvent(RulerEvent.SaveMeasurement)
-                }
-            ) {
-                Text(text = "Save Test")
-            }
-        }
+    BottomDrawer(
+        drawerContent = {
+            HistoryDrawerScreen()
+        },
+        drawerBackgroundColor = Color(0.5f, 0.5f, 0.5f, 0.5f)
+    ) {
+//        Box {
+//            ScaleScreen()
+////        GestureScreen()
+//            Column(
+//            ) {
+//                Button(
+//                    modifier = Modifier
+//                        .padding(20.dp),
+//                    onClick = {
+//                        viewModel.onEvent(RulerEvent.SetScale(RulerScale.Inch))
+//                    }
+//                ) {
+//                    Text(text = "toInch")
+//                }
+//                Button(
+//                    modifier = Modifier
+//                        .padding(20.dp),
+//                    onClick = {
+//                        viewModel.onEvent(RulerEvent.SetScale(RulerScale.Centimeter))
+//                    }
+//                ) {
+//                    Text(text = "toCM")
+//                }
+//                Button(
+//                    modifier = Modifier
+//                        .padding(20.dp),
+//                    onClick = {
+//                        viewModel.onEvent(RulerEvent.SaveMeasurement)
+//                    }
+//                ) {
+//                    Text(text = "Save Test")
+//                }
+//            }
+//        }
     }
 }
