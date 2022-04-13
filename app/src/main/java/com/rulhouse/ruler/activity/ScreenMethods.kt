@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Point
 import android.os.Build
 import android.util.DisplayMetrics
+import com.rulhouse.ruler.feature_node.presentation.ruler.RulerScale
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -49,6 +50,18 @@ class ScreenMethods {
         fun getPpi(context: Context): Float {
             val dm = context.resources.displayMetrics
             return dm.xdpi
+        }
+
+        fun getPpc(context: Context): Float {
+            val dm = context.resources.displayMetrics
+            return dm.xdpi / 2.54f
+        }
+
+        fun getScalePerUnit(context: Context, scale: RulerScale): Float {
+            return when (scale) {
+                RulerScale.Centimeter -> getPpc(context)
+                RulerScale.Inch -> getPpi(context)
+            }
         }
 
         fun getWidth(context: Context): Int {
