@@ -41,6 +41,18 @@ class RulerViewModel @Inject constructor(
                         )
                     )
                 }
+                is RulerEvent.SwitchScale -> {
+                    _lengthScale.value = lengthScale.value.copy(
+                        scale = when(_lengthScale.value.scale) {
+                            RulerScale.Centimeter -> {
+                                RulerScale.Inch
+                            }
+                            RulerScale.Inch -> {
+                                RulerScale.Centimeter
+                            }
+                        }
+                    )
+                }
                 is RulerEvent.SaveMeasurement -> {
                     viewModelScope.launch {
                         try {
