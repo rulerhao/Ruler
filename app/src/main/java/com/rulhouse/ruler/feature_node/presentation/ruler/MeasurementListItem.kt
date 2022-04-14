@@ -18,22 +18,25 @@ fun MeasurementListItem(
     Column(
         modifier = Modifier
             .padding(
-                vertical = 50.dp
+                vertical = 10.dp
             ),
         ) {
         Text(
             text = measurement.title,
             style = typography.h3
         )
-        Row(
+        Spacer(modifier = Modifier.size(30.dp))
+        Box(
+            modifier = Modifier.width(500.dp)
         ) {
             Text(
+                modifier = Modifier.align(Alignment.CenterStart),
                 text = "${measurement.width} x ${measurement.height}",
                 style = typography.h4
             )
             Text(
-                modifier = Modifier.align(alignment = Alignment.Bottom),
-                text = "(${lengthScale})",
+                modifier = Modifier.align(Alignment.CenterEnd),
+                text = "$lengthScale",
                 style = typography.h6,
             )
         }
