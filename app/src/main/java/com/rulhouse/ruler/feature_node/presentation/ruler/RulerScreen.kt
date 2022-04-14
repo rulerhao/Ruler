@@ -33,7 +33,7 @@ import kotlin.math.sqrt
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RulerScreen(
-//    viewModel: RulerViewModel = hiltViewModel()
+    viewModel: RulerViewModel = hiltViewModel()
 ) {
     BottomDrawer(
         drawerContent = {
@@ -42,39 +42,38 @@ fun RulerScreen(
         drawerBackgroundColor = Color.Transparent,
         drawerElevation = 0.dp
     ) {
-//        Box {
-//            ScaleScreen()
-////        GestureScreen()
-//            Column(
-//            ) {
-//                Button(
-//                    modifier = Modifier
-//                        .padding(20.dp),
-//                    onClick = {
-//                        viewModel.onEvent(RulerEvent.SetScale(RulerScale.Inch))
-//                    }
-//                ) {
-//                    Text(text = "toInch")
-//                }
-//                Button(
-//                    modifier = Modifier
-//                        .padding(20.dp),
-//                    onClick = {
-//                        viewModel.onEvent(RulerEvent.SetScale(RulerScale.Centimeter))
-//                    }
-//                ) {
-//                    Text(text = "toCM")
-//                }
-//                Button(
-//                    modifier = Modifier
-//                        .padding(20.dp),
-//                    onClick = {
-//                        viewModel.onEvent(RulerEvent.SaveMeasurement)
-//                    }
-//                ) {
-//                    Text(text = "Save Test")
-//                }
-//            }
-//        }
+        Box {
+            ScaleScreen()
+//        GestureScreen()
+            Column(
+            ) {
+                val scaleChangeButtonText = when(viewModel.lengthScale.value.scale) {
+                    RulerScale.Centimeter -> {
+                        "IN"
+                    }
+                    RulerScale.Inch -> {
+                        "CM"
+                    }
+                }
+                Button(
+                    modifier = Modifier
+                        .padding(20.dp),
+                    onClick = {
+                        viewModel.onEvent(RulerEvent.SwitchScale)
+                    }
+                ) {
+                    Text(text = scaleChangeButtonText)
+                }
+                Button(
+                    modifier = Modifier
+                        .padding(20.dp),
+                    onClick = {
+                        viewModel.onEvent(RulerEvent.SaveMeasurement)
+                    }
+                ) {
+                    Text(text = "Save Test")
+                }
+            }
+        }
     }
 }
