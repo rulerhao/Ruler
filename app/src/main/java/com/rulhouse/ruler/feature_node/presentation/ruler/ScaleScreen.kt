@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.activity.ScreenMethods
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.math.abs
 
 
 @Composable
@@ -348,18 +349,40 @@ fun PreviewBlend(
         with(drawContext.canvas.nativeCanvas) {
             val checkPoint = saveLayer(null, null)
 
+            val scaleAreaTopLeft = Offset(kotlin.math.min(positionX1, positionX2).toFloat(), kotlin.math.min(
+                positionY1,
+                positionY2
+            ).toFloat())
+            val scaleAreaSize = Size(abs(positionX1 - positionX2).toFloat(), abs(positionY1 - positionY2).toFloat())
             drawRect(
                 color = Color.Red,
-                topLeft = Offset(Math.min(positionX1, positionX2).toFloat(), Math.min(positionY1, positionY2).toFloat()),
-                size = Size(Math.abs(positionX1 - positionX2).toFloat(), Math.abs(positionY1 - positionY2).toFloat()),
+                topLeft = scaleAreaTopLeft,
+                size = scaleAreaSize,
             )
 
-            val textPaint = android.graphics.Paint()
-            textPaint.textAlign = android.graphics.Paint.Align.CENTER
-            textPaint.textSize = 50f
-            val xPos: Float = positionX1.toFloat()
-            val yPos = (positionY1 - (textPaint.descent() + textPaint.ascent()) / 2)
-            drawText("Helloabasac", xPos, yPos, textPaint)
+            /**
+             * Scale area top side text
+             */
+            val topTextPaint = android.graphics.Paint()
+            topTextPaint.textAlign = android.graphics.Paint.Align.CENTER
+            topTextPaint.textSize = 50f
+            val topTextPosition = Offset(
+                scaleAreaTopLeft.x + abs(positionX2 - positionX1) / 2,
+                (scaleAreaTopLeft.y - (topTextPaint.descent() + topTextPaint.ascent()) / 2)
+            )
+            drawText("Helloabasac", topTextPosition.x, topTextPosition.y, topTextPaint)
+
+            /**
+             * Scale area left side text
+             */
+            val leftTextPaint = android.graphics.Paint()
+            leftTextPaint.textAlign = android.graphics.Paint.Align.CENTER
+            leftTextPaint.textSize = 50f
+            val leftTextPosition = Offset(
+                scaleAreaTopLeft.x,
+                (scaleAreaTopLeft.y - (topTextPaint.descent() + topTextPaint.ascent()) / 2) + abs(positionY2 - positionY1) / 2
+            )
+            drawText("Helloabasac", leftTextPosition.x, leftTextPosition.y, leftTextPaint)
 
             // Draw Scale Line
             val scaleLength = 100f
