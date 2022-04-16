@@ -1,5 +1,6 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
+import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.*
@@ -292,13 +293,79 @@ fun PreviewBlend(
 ) {
     val context = LocalContext.current
 
+    var positionTouchDown = Offset.Unspecified
+    var middlePositionWhenTouchDown = Offset.Unspecified
+
+    /**
+     * Scale area
+     */
     var positionX1 by remember { mutableStateOf(200) }
     var positionX2 by remember { mutableStateOf(400) }
     var positionY1 by remember { mutableStateOf(300) }
     var positionY2 by remember { mutableStateOf(500) }
+    val scaleAreaTopLeft = Offset(
+        kotlin.math.min(positionX1, positionX2).toFloat(), kotlin.math.min(
+            positionY1,
+            positionY2
+        ).toFloat()
+    )
+    val scaleAreaSize =
+        Size(abs(positionX1 - positionX2).toFloat(), abs(positionY1 - positionY2).toFloat())
 
-    var positionTouchDown = Offset.Unspecified
-    var middlePositionWhenTouchDown = Offset.Unspecified
+    /**
+     * Scale area side text
+     */
+    val scaleAreaTextSize = 100f
+    /**
+     * Scale area top side text
+     */
+    val topTextPaint = android.graphics.Paint()
+    topTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
+    topTextPaint.textSize = scaleAreaTextSize
+    val topTextXBaseLine = scaleAreaTopLeft.x + abs(positionX2 - positionX1) / 2 + topTextPaint.measureText("3CM") / 2
+    val topTextX =
+        if (topTextXBaseLine < topTextPaint.measureText("3CM")) topTextPaint.measureText("3CM")
+        else if (topTextXBaseLine > ScreenMethods.getWidth(context = context)) ScreenMethods.getWidth(context = context).toFloat()
+        else topTextXBaseLine
+    val topTextY =
+        if (scaleAreaTopLeft.y < - topTextPaint.ascent()) - topTextPaint.ascent()
+        else if (scaleAreaTopLeft.y > ScreenMethods.getHeight(context = context)) ScreenMethods.getHeight(context = context).toFloat()
+        else scaleAreaTopLeft.y
+    val topTextPosition = Offset(
+        x = topTextX,
+        y = topTextY
+    )
+    /**
+     * Scale area left side text
+     */
+    val leftTextPaint = android.graphics.Paint()
+    leftTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
+    leftTextPaint.textSize = scaleAreaTextSize
+    val leftTextX =
+        if (scaleAreaTopLeft.x < leftTextPaint.measureText("3CM")) leftTextPaint.measureText("3CM")
+        else if (scaleAreaTopLeft.x > ScreenMethods.getWidth(context = context)) ScreenMethods.getWidth(context = context).toFloat()
+        else scaleAreaTopLeft.x
+    val leftTextYBaseLine = scaleAreaTopLeft.y + abs(positionY2 - positionY1) / 2 - (leftTextPaint.descent() + leftTextPaint.ascent()) / 2
+    val leftTextY =
+        if (leftTextYBaseLine < - leftTextPaint.ascent()) - leftTextPaint.ascent()
+        else if (leftTextYBaseLine > ScreenMethods.getHeight(context = context)) ScreenMethods.getHeight(context = context).toFloat()
+        else leftTextYBaseLine
+    val leftTextPosition = Offset(
+        x = leftTextX,
+        y = leftTextY
+    )
+
+    Log.d("TestTextSize", "leftTextYBaseLine = $leftTextYBaseLine")
+    Log.d("TestTextSize", "topTextY = $topTextY")
+    Log.d("TestTextSize", "scaleAreaTopLeft.y = ${scaleAreaTopLeft.y}")
+    Log.d("TestTextSize", "ascent() = ${topTextPaint.ascent()}")
+    Log.d("TestTextSize", "descent() = ${topTextPaint.descent()}")
+    /**
+     * Scale line
+     */
+    val scaleStrokeLength = 100f
+    val scaleStrokeWidth = 10f
+    val scaleLengthPerUnit = ScreenMethods.getScalePerUnit(context, lengthScale)
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -349,11 +416,9 @@ fun PreviewBlend(
         with(drawContext.canvas.nativeCanvas) {
             val checkPoint = saveLayer(null, null)
 
-            val scaleAreaTopLeft = Offset(kotlin.math.min(positionX1, positionX2).toFloat(), kotlin.math.min(
-                positionY1,
-                positionY2
-            ).toFloat())
-            val scaleAreaSize = Size(abs(positionX1 - positionX2).toFloat(), abs(positionY1 - positionY2).toFloat())
+            /**
+             * Scale area
+             */
             drawRect(
                 color = Color.Red,
                 topLeft = scaleAreaTopLeft,
@@ -363,39 +428,22 @@ fun PreviewBlend(
             /**
              * Scale area top side text
              */
-            val topTextPaint = android.graphics.Paint()
-            topTextPaint.textAlign = android.graphics.Paint.Align.CENTER
-            topTextPaint.textSize = 50f
-            val topTextPosition = Offset(
-                scaleAreaTopLeft.x + abs(positionX2 - positionX1) / 2,
-                (scaleAreaTopLeft.y - (topTextPaint.descent() + topTextPaint.ascent()) / 2)
-            )
-            drawText("Helloabasac", topTextPosition.x, topTextPosition.y, topTextPaint)
+            drawText("3cm", topTextPosition.x, topTextPosition.y, topTextPaint)
 
             /**
              * Scale area left side text
              */
-            val leftTextPaint = android.graphics.Paint()
-            leftTextPaint.textAlign = android.graphics.Paint.Align.CENTER
-            leftTextPaint.textSize = 50f
-            val leftTextPosition = Offset(
-                scaleAreaTopLeft.x,
-                (scaleAreaTopLeft.y - (topTextPaint.descent() + topTextPaint.ascent()) / 2) + abs(positionY2 - positionY1) / 2
-            )
-            drawText("Helloabasac", leftTextPosition.x, leftTextPosition.y, leftTextPaint)
+            drawText("3cm", leftTextPosition.x, leftTextPosition.y, leftTextPaint)
 
             // Draw Scale Line
-            val scaleLength = 100f
-            val scaleLengthPerUnit = ScreenMethods.getScalePerUnit(context, lengthScale)
-
             // width line
             for (i in 0..((size.width / scaleLengthPerUnit).toInt())) {
                 val location = i * scaleLengthPerUnit
                 drawLine(
                     color = Color.Blue,
                     start = Offset(location, 0f),
-                    end = Offset(location, scaleLength),
-                    strokeWidth = 10f,
+                    end = Offset(location, scaleStrokeLength),
+                    strokeWidth = scaleStrokeWidth,
                     blendMode = BlendMode.Multiply
                 )
             }
@@ -406,11 +454,12 @@ fun PreviewBlend(
                 drawLine(
                     color = Color.Blue,
                     start = Offset(0f, location),
-                    end = Offset(scaleLength, location),
-                    strokeWidth = 10f,
+                    end = Offset(scaleStrokeLength, location),
+                    strokeWidth = scaleStrokeWidth,
                     blendMode = BlendMode.Multiply
                 )
             }
+
             restoreToCount(checkPoint)
         }
     }
