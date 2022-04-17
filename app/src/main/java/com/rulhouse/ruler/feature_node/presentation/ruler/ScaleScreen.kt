@@ -450,6 +450,26 @@ fun PreviewBlend(
                     strokeWidth = scaleStrokeWidth,
                     blendMode = BlendMode.Multiply
                 )
+
+                val halfLocation = i * scaleLengthPerUnit + scaleLengthPerUnit / 2
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(halfLocation, 0f),
+                    end = Offset(halfLocation, scaleStrokeLength / 2),
+                    strokeWidth = scaleStrokeWidth / 2,
+                    blendMode = BlendMode.Multiply
+                )
+            }
+
+            for (i in 0..((size.width / (scaleLengthPerUnit / 10)).toInt())) {
+                val location = i * scaleLengthPerUnit / 10
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(location, 0f),
+                    end = Offset(location, scaleStrokeLength / 3),
+                    strokeWidth = scaleStrokeWidth / 3,
+                    blendMode = BlendMode.Multiply
+                )
             }
 
             // height line
@@ -460,6 +480,26 @@ fun PreviewBlend(
                     start = Offset(0f, location),
                     end = Offset(scaleStrokeLength, location),
                     strokeWidth = scaleStrokeWidth,
+                    blendMode = BlendMode.Multiply
+                )
+
+                val halfLocation = i * scaleLengthPerUnit + scaleLengthPerUnit / 2
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(0f, halfLocation),
+                    end = Offset(scaleStrokeLength / 2, halfLocation),
+                    strokeWidth = scaleStrokeWidth / 2,
+                    blendMode = BlendMode.Multiply
+                )
+            }
+
+            for (i in 0..((size.height / (scaleLengthPerUnit / 10)).toInt())) {
+                val location = i * scaleLengthPerUnit / 10
+                drawLine(
+                    color = Color.Blue,
+                    start = Offset(0f, location),
+                    end = Offset(scaleStrokeLength / 3, location),
+                    strokeWidth = scaleStrokeWidth / 3,
                     blendMode = BlendMode.Multiply
                 )
             }
