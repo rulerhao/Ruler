@@ -1,6 +1,5 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
-import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.*
@@ -18,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.activity.ScreenMethods
+import com.rulhouse.ruler.methods.ScaleTextGetter
 import com.rulhouse.ruler.methods.ScaleTextPositionGetter
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
@@ -318,37 +318,49 @@ fun PreviewBlend(
      */
     val scaleAreaTextSize = 100f
 
+    val scaleAreaWidth = abs(positionX2 - positionX1)
+    val scaleAreaHeight = abs(positionY2 - positionY1)
     /**
      * Scale area top side text
      */
+    val topTextString = ScaleTextGetter.textString(
+        context = context,
+        length = scaleAreaWidth.toFloat(),
+        scale = lengthScale
+    )
     val topTextPaint = android.graphics.Paint()
     topTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
     topTextPaint.textSize = scaleAreaTextSize
     val topTextOffset = Offset(
-        x = scaleAreaTopLeft.x + abs(positionX2 - positionX1) / 2,
+        x = scaleAreaTopLeft.x + scaleAreaWidth / 2,
         y = scaleAreaTopLeft.y
     )
     val topTextPosition = ScaleTextPositionGetter.topTextOffset(
             context = context,
             paint = topTextPaint,
-            text = "3CM",
+            text = topTextString,
             offset = topTextOffset
     )
 
     /**
      * Scale area left side text
      */
+    val leftTextString = ScaleTextGetter.textString(
+        context = context,
+        length = scaleAreaHeight.toFloat(),
+        scale = lengthScale
+    )
     val leftTextPaint = android.graphics.Paint()
     leftTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
     leftTextPaint.textSize = scaleAreaTextSize
     val leftTextOffset = Offset(
         x = scaleAreaTopLeft.x,
-        y = scaleAreaTopLeft.y + abs(positionY2 - positionY1) / 2
+        y = scaleAreaTopLeft.y + scaleAreaHeight / 2
     )
     val leftTextPosition = ScaleTextPositionGetter.leftTextOffset(
         context = context,
         paint = topTextPaint,
-        text = "3CM",
+        text = leftTextString,
         offset = leftTextOffset
     )
 
@@ -420,12 +432,12 @@ fun PreviewBlend(
             /**
              * Scale area top side text
              */
-            drawText("3cm", topTextPosition.x, topTextPosition.y, topTextPaint)
+            drawText(topTextString, topTextPosition.x, topTextPosition.y, topTextPaint)
 
             /**
              * Scale area left side text
              */
-            drawText("3cm", leftTextPosition.x, leftTextPosition.y, leftTextPaint)
+            drawText(leftTextString, leftTextPosition.x, leftTextPosition.y, leftTextPaint)
 
             // Draw Scale Line
             // width line
