@@ -6,9 +6,12 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -35,32 +38,37 @@ import kotlin.math.sqrt
 fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
+    val scaleChangeButtonText = when(viewModel.lengthScale.value.scale) {
+        RulerScale.Centimeter -> {
+            "IN"
+        }
+        RulerScale.Inch -> {
+            "CM"
+        }
+    }
+
     BottomDrawer(
         drawerContent = {
             HistoryDrawerScreen()
         },
         drawerBackgroundColor = Color.Transparent,
-        drawerElevation = 0.dp
+        drawerElevation = 0.dp,
+        drawerState = viewModel.drawerState.value
     ) {
         Box {
             ScaleScreen()
 //        GestureScreen()
-            Column(
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
             ) {
-                val scaleChangeButtonText = when(viewModel.lengthScale.value.scale) {
-                    RulerScale.Centimeter -> {
-                        "IN"
-                    }
-                    RulerScale.Inch -> {
-                        "CM"
-                    }
-                }
                 Button(
                     modifier = Modifier
                         .padding(20.dp),
                     onClick = {
                         viewModel.onEvent(RulerEvent.SwitchScale)
-                    }
+                    },
+                    shape = CircleShape
                 ) {
                     Text(text = scaleChangeButtonText)
                 }
@@ -68,10 +76,14 @@ fun RulerScreen(
                     modifier = Modifier
                         .padding(20.dp),
                     onClick = {
-                        viewModel.onEvent(RulerEvent.SaveMeasurement)
-                    }
+                        viewModel.onEvent(RulerEvent.ToggleSaveDrawer)
+                    },
+                    shape = CircleShape
                 ) {
-                    Text(text = "Save Test")
+                    Icon(
+                        Icons.Rounded.History,
+                        contentDescription = "History",
+                    )
                 }
             }
         }

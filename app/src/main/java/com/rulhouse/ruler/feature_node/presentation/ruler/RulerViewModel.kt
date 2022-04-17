@@ -1,6 +1,9 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
 import android.util.Log
+import androidx.compose.material.BottomDrawerState
+import androidx.compose.material.BottomDrawerValue
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,9 +18,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
+@OptIn(ExperimentalMaterialApi::class)
 class RulerViewModel @Inject constructor(
     private val measurementUseCases: MeasurementUseCases,
 ) : ViewModel() {
+    private val _drawerState = mutableStateOf(
+        BottomDrawerState(BottomDrawerValue.Closed)
+    )
+    val drawerState: State<BottomDrawerState> = _drawerState
+
     private val _lengthScale = mutableStateOf(RulerState(
         scale = RulerScale.Centimeter
     ))
@@ -40,6 +49,19 @@ class RulerViewModel @Inject constructor(
                             scale = event.scale
                         )
                     )
+                }
+                is RulerEvent.ToggleSaveDrawer -> {
+                    _drawerState.value = when(_drawerState.value.currentValue) {
+                        BottomDrawerValue.Closed -> {
+                            BottomDrawerState(BottomDrawerValue.Expanded)
+                        }
+                        BottomDrawerValue.Expanded -> {
+                            BottomDrawerState(BottomDrawerValue.Closed)
+                        }
+                        else -> {
+                            _drawerState.value
+                        }
+                    }
                 }
                 is RulerEvent.SwitchScale -> {
                     _lengthScale.value = lengthScale.value.copy(
