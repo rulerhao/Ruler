@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.activity.ScreenMethods
+import com.rulhouse.ruler.methods.ScaleTextPositionGetter
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
@@ -316,50 +317,41 @@ fun PreviewBlend(
      * Scale area side text
      */
     val scaleAreaTextSize = 100f
+
     /**
      * Scale area top side text
      */
     val topTextPaint = android.graphics.Paint()
     topTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
     topTextPaint.textSize = scaleAreaTextSize
-    val topTextXBaseLine = scaleAreaTopLeft.x + abs(positionX2 - positionX1) / 2 + topTextPaint.measureText("3CM") / 2
-    val topTextX =
-        if (topTextXBaseLine < topTextPaint.measureText("3CM")) topTextPaint.measureText("3CM")
-        else if (topTextXBaseLine > ScreenMethods.getWidth(context = context)) ScreenMethods.getWidth(context = context).toFloat()
-        else topTextXBaseLine
-    val topTextY =
-        if (scaleAreaTopLeft.y < - topTextPaint.ascent()) - topTextPaint.ascent()
-        else if (scaleAreaTopLeft.y > ScreenMethods.getHeight(context = context)) ScreenMethods.getHeight(context = context).toFloat()
-        else scaleAreaTopLeft.y
-    val topTextPosition = Offset(
-        x = topTextX,
-        y = topTextY
+    val topTextOffset = Offset(
+        x = scaleAreaTopLeft.x + abs(positionX2 - positionX1) / 2,
+        y = scaleAreaTopLeft.y
     )
+    val topTextPosition = ScaleTextPositionGetter.topTextOffset(
+            context = context,
+            paint = topTextPaint,
+            text = "3CM",
+            offset = topTextOffset
+    )
+
     /**
      * Scale area left side text
      */
     val leftTextPaint = android.graphics.Paint()
     leftTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
     leftTextPaint.textSize = scaleAreaTextSize
-    val leftTextX =
-        if (scaleAreaTopLeft.x < leftTextPaint.measureText("3CM")) leftTextPaint.measureText("3CM")
-        else if (scaleAreaTopLeft.x > ScreenMethods.getWidth(context = context)) ScreenMethods.getWidth(context = context).toFloat()
-        else scaleAreaTopLeft.x
-    val leftTextYBaseLine = scaleAreaTopLeft.y + abs(positionY2 - positionY1) / 2 - (leftTextPaint.descent() + leftTextPaint.ascent()) / 2
-    val leftTextY =
-        if (leftTextYBaseLine < - leftTextPaint.ascent()) - leftTextPaint.ascent()
-        else if (leftTextYBaseLine > ScreenMethods.getHeight(context = context)) ScreenMethods.getHeight(context = context).toFloat()
-        else leftTextYBaseLine
-    val leftTextPosition = Offset(
-        x = leftTextX,
-        y = leftTextY
+    val leftTextOffset = Offset(
+        x = scaleAreaTopLeft.x,
+        y = scaleAreaTopLeft.y + abs(positionY2 - positionY1) / 2
+    )
+    val leftTextPosition = ScaleTextPositionGetter.leftTextOffset(
+        context = context,
+        paint = topTextPaint,
+        text = "3CM",
+        offset = leftTextOffset
     )
 
-    Log.d("TestTextSize", "leftTextYBaseLine = $leftTextYBaseLine")
-    Log.d("TestTextSize", "topTextY = $topTextY")
-    Log.d("TestTextSize", "scaleAreaTopLeft.y = ${scaleAreaTopLeft.y}")
-    Log.d("TestTextSize", "ascent() = ${topTextPaint.ascent()}")
-    Log.d("TestTextSize", "descent() = ${topTextPaint.descent()}")
     /**
      * Scale line
      */
