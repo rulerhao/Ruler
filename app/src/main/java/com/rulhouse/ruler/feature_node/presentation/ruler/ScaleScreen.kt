@@ -320,6 +320,7 @@ fun PreviewBlend(
 
     val scaleAreaWidth = abs(positionX2 - positionX1)
     val scaleAreaHeight = abs(positionY2 - positionY1)
+
     /**
      * Scale area top side text
      */
@@ -336,10 +337,10 @@ fun PreviewBlend(
         y = scaleAreaTopLeft.y
     )
     val topTextPosition = ScaleTextPositionGetter.topTextOffset(
-            context = context,
-            paint = topTextPaint,
-            text = topTextString,
-            offset = topTextOffset
+        context = context,
+        paint = topTextPaint,
+        text = topTextString,
+        offset = topTextOffset
     )
 
     /**
@@ -367,9 +368,23 @@ fun PreviewBlend(
     /**
      * Scale line
      */
-    val scaleStrokeLength = 100f
-    val scaleStrokeWidth = 10f
+    // Draw Scale Line
+    val scaleStrokeLength = 50f
+    val scaleStrokeWidth = 5f
     val scaleLengthPerUnit = ScreenMethods.getScalePerUnit(context, lengthScale)
+
+    /**
+     * Scale text
+     */
+    val scaleTextSize = 60f
+    // Scale width line text
+    val scaleWidthLineTextPaint = android.graphics.Paint()
+    scaleWidthLineTextPaint.textAlign = android.graphics.Paint.Align.CENTER
+    scaleWidthLineTextPaint.textSize = scaleTextSize
+    // Scale height line text
+    val scaleHeightLineTextPaint = android.graphics.Paint()
+    scaleHeightLineTextPaint.textAlign = android.graphics.Paint.Align.LEFT
+    scaleHeightLineTextPaint.textSize = scaleTextSize
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -443,6 +458,14 @@ fun PreviewBlend(
             // width line
             for (i in 0..((size.width / scaleLengthPerUnit).toInt())) {
                 val location = i * scaleLengthPerUnit
+                if (i > 0) {
+                    drawText(
+                        i.toString(),
+                        location,
+                        scaleStrokeLength - scaleWidthLineTextPaint.ascent(),
+                        scaleWidthLineTextPaint
+                    )
+                }
                 drawLine(
                     color = Color.Blue,
                     start = Offset(location, 0f),
@@ -475,6 +498,15 @@ fun PreviewBlend(
             // height line
             for (i in 0..((size.height / scaleLengthPerUnit).toInt())) {
                 val location = i * scaleLengthPerUnit
+                // draw height text
+                if (i > 0) {
+                    drawText(
+                        i.toString(),
+                        scaleStrokeLength + 20f,
+                        location - (scaleHeightLineTextPaint.ascent() + scaleHeightLineTextPaint.descent()) / 2,
+                        scaleHeightLineTextPaint
+                    )
+                }
                 drawLine(
                     color = Color.Blue,
                     start = Offset(0f, location),
