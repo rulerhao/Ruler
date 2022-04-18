@@ -312,29 +312,35 @@ fun PreviewBlend(
         ).toFloat()
     )
     val scaleAreaSize =
-        Size(abs(positionX1 - positionX2).toFloat(), abs(positionY1 - positionY2).toFloat())
+        Size(abs(positionX1 - positionX2).toFloat(), abs(positionY1 - positionY2).toFloat()).also {
+            viewModel.onEvent(
+                RulerEvent.ChangeScaleAreaSize(
+                    com.rulhouse.ruler.feature_node.presentation.ruler.util.Size(
+                        it.width / ScreenMethods.getPpc(context),
+                        it.height / ScreenMethods.getPpc(context)
+                    )
+                )
+            )
+        }
 
     /**
      * Scale area side text
      */
     val scaleAreaTextSize = 100f
 
-    val scaleAreaWidth = abs(positionX2 - positionX1)
-    val scaleAreaHeight = abs(positionY2 - positionY1)
-
     /**
      * Scale area top side text
      */
     val topTextString = ScaleTextGetter.textString(
         context = context,
-        length = scaleAreaWidth.toFloat(),
+        length = scaleAreaSize.width,
         scale = lengthScale
     )
     val topTextPaint = android.graphics.Paint()
     topTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
     topTextPaint.textSize = scaleAreaTextSize
     val topTextOffset = Offset(
-        x = scaleAreaTopLeft.x + scaleAreaWidth / 2,
+        x = scaleAreaTopLeft.x + scaleAreaSize.width / 2,
         y = scaleAreaTopLeft.y
     )
     val topTextPosition = ScaleTextPositionGetter.topTextOffset(
@@ -349,7 +355,7 @@ fun PreviewBlend(
      */
     val leftTextString = ScaleTextGetter.textString(
         context = context,
-        length = scaleAreaHeight.toFloat(),
+        length = scaleAreaSize.height,
         scale = lengthScale
     )
     val leftTextPaint = android.graphics.Paint()
@@ -357,7 +363,7 @@ fun PreviewBlend(
     leftTextPaint.textSize = scaleAreaTextSize
     val leftTextOffset = Offset(
         x = scaleAreaTopLeft.x,
-        y = scaleAreaTopLeft.y + scaleAreaHeight / 2
+        y = scaleAreaTopLeft.y + scaleAreaSize.height / 2
     )
     val leftTextPosition = ScaleTextPositionGetter.leftTextOffset(
         context = context,
