@@ -290,7 +290,8 @@ fun ScaleScreen(
 @Preview
 @Composable
 fun PreviewBlend(
-    lengthScale: RulerScale = RulerScale.Centimeter
+    lengthScale: RulerScale = RulerScale.Centimeter,
+    viewModel: RulerViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
@@ -429,6 +430,14 @@ fun PreviewBlend(
                         positionY1 += dragAmount.y.toInt()
                         if (positionY1 < 0) positionY1 = 0
                     }
+                    viewModel.onEvent(
+                        RulerEvent.ChangeScaleAreaSize(
+                            com.rulhouse.ruler.feature_node.presentation.ruler.util.Size(
+                                abs(positionX2 - positionX1) / ScreenMethods.getPpc(context),
+                                abs(positionY2 - positionY1) / ScreenMethods.getPpc(context)
+                            )
+                        )
+                    )
                 }
             }
     ) {

@@ -7,22 +7,22 @@ object MeasurementProvider {
         Measurement(
             id = 1,
             title = "first",
-            width = 50,
-            height = 100,
+            width = 50f,
+            height = 100f,
             timeStamp = 1649745127385
         ),
         Measurement(
             id = 2,
             title = "second",
-            width = 150,
-            height = 250,
+            width = 150f,
+            height = 250f,
             timeStamp = 1649745127393
         ),
         Measurement(
             id = 3,
             title = "third",
-            width = 70,
-            height = 30,
+            width = 70f,
+            height = 30f,
             timeStamp = 1649745127452
         )
     )

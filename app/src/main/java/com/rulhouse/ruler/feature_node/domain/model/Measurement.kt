@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 @Entity
 data class Measurement(
     val title: String,
-    val width: Int,
-    val height: Int,
+    val width: Float,
+    val height: Float,
     val timeStamp: Long,
     @PrimaryKey val id: Int? = null
 ) {

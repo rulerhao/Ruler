@@ -32,6 +32,12 @@ class RulerViewModel @Inject constructor(
     ))
     val lengthScale: State<RulerState> = _lengthScale
 
+    private val _scaleAreaWidth = mutableStateOf(0.0f)
+    val scaleAreaWidth: State<Float> = _scaleAreaWidth
+
+    private val _scaleAreaHeight = mutableStateOf(0.0f)
+    val scaleAreaHeight: State<Float> = _scaleAreaHeight
+
     // Flow
     private val _eventFlow = MutableSharedFlow<RulerEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -78,11 +84,12 @@ class RulerViewModel @Inject constructor(
                 is RulerEvent.SaveMeasurement -> {
                     viewModelScope.launch {
                         try {
+                            Log.d("testAddEditNote", "First")
                             measurementUseCases.addMeasurement(
                                 Measurement(
-                                    title = "Test Title",
-                                    width = 50,
-                                    height = 100,
+                                    title = event.title,
+                                    width = event.size.width,
+                                    height = event.size.height,
                                     timeStamp = System.currentTimeMillis(),
                                     id = currentMeasurementId
                                 )
@@ -98,6 +105,10 @@ class RulerViewModel @Inject constructor(
 //                            )
                         }
                     }
+                }
+                is RulerEvent.ChangeScaleAreaSize -> {
+                    _scaleAreaWidth.value = event.size.width
+                    _scaleAreaHeight.value = event.size.height
                 }
                 else -> {}
             }

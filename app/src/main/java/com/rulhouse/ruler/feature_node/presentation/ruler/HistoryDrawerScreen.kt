@@ -5,10 +5,13 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -19,49 +22,78 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.feature_node.domain.model.Measurement
+import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HistoryDrawerScreen(
-//    rulerViewModel: RulerViewModel = hiltViewModel()
+    viewModel: RulerViewModel = hiltViewModel()
 ) {
     val measurements = remember { mutableStateListOf<Measurement>() }
     measurements.swapList(MeasurementProvider.measurementList)
 
     val textState = remember { mutableStateOf(TextFieldValue()) }
 
+    val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier
             .padding(all = 32.dp)
             .background(color = Color.Transparent)
     ) {
-        Column() {
-            TextField(
-                value = textState.value,
-                onValueChange = { textState.value = it }
-            )
-            LazyColumn(
-                contentPadding = PaddingValues(horizontal = 32.dp, vertical = 8.dp),
-                modifier = Modifier.background(
+        Column(
+            modifier = Modifier
+                .background(
                     color = Color.White,
                     shape = RoundedCornerShape(20.dp)
                 )
+                .padding(horizontal = 32.dp, vertical = 8.dp)
+        ) {
+            Row(
+
             ) {
-//                items(
-//                    items = measurements,
-//                    itemContent = {
-//                        MeasurementListItem(
-//                            measurement = it,
-//                            lengthScale = rulerViewModel.lengthScale.value.scale
-//                        )
-//                    }
-//                )
+                TextField(
+                    value = textState.value,
+                    onValueChange = { textState.value = it },
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        }
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Text
+                    ),
+                )
+                Button(
+                    onClick = {
+                        Log.d("TestTextView", "OnDone")
+                        viewModel.onEvent(
+                            RulerEvent.SaveMeasurement(
+                                title = textState.value.text,
+                                size = Size(
+                                    viewModel.scaleAreaWidth.value,
+                                    viewModel.scaleAreaHeight.value
+                                )
+                            )
+                        )
+                    }
+                ) {
+
+                }
+            }
+            LazyColumn(
+
+            ) {
                 items(measurements) { item ->
                     var unread by remember { mutableStateOf(false) }
                     val dismissState = rememberDismissState(
@@ -77,7 +109,10 @@ fun HistoryDrawerScreen(
                     SwipeToDismiss(
                         state = dismissState,
                         modifier = Modifier.padding(vertical = 4.dp),
-                        directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                        directions = setOf(
+                            DismissDirection.StartToEnd,
+                            DismissDirection.EndToStart
+                        ),
                         dismissThresholds = { direction ->
                             // threshold of swiping from left to right or right to left.
                             FractionalThreshold(
@@ -110,7 +145,10 @@ fun HistoryDrawerScreen(
                             )
 
                             Box(
-                                Modifier.fillMaxSize().background(color).padding(horizontal = 20.dp),
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(color)
+                                    .padding(horizontal = 20.dp),
                                 contentAlignment = alignment
                             ) {
                                 Icon(
@@ -122,32 +160,29 @@ fun HistoryDrawerScreen(
                         },
                         dismissContent = {
                             Card(
-//                                modifier = Modifier.width(width = 0.dp),
                                 elevation = animateDpAsState(
                                     if (dismissState.dismissDirection != null) 4.dp else 0.dp
                                 ).value
                             ) {
                                 ListItem(
                                     text = {
-                                        Text(item.title, fontWeight = if (unread) FontWeight.Bold else null)
+                                        Text(
+                                            item.title,
+                                            fontWeight = if (unread) FontWeight.Bold else null
+                                        )
                                     },
                                     secondaryText = { Text("Swipe me left or right!") }
                                 )
                             }
                         }
                     )
-
-//                    MeasurementListItem(
-//                        measurement = item,
-//                        lengthScale = rulerViewModel.lengthScale.value.scale
-//                    )
                 }
             }
         }
     }
 }
 
-fun <T> SnapshotStateList<T>.swapList(newList: List<T>){
+fun <T> SnapshotStateList<T>.swapList(newList: List<T>) {
     clear()
     addAll(newList)
 }
