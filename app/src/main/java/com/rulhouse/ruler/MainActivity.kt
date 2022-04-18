@@ -1,5 +1,6 @@
 package com.rulhouse.ruler
 
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Insets
 import android.graphics.Point
@@ -26,6 +27,8 @@ import android.view.WindowInsets
 
 import kotlinx.coroutines.*
 import android.util.DisplayMetrics
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import com.rulhouse.ruler.activity.ScreenMethods
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -76,6 +79,14 @@ class MainActivity : ComponentActivity() {
         Log.d("testDensity", "screenDensity = $screenDensity, dotsPerInch = $dotsPerInch")
 
         Log.d("testDensity", "real dpi = ${ScreenMethods.getPpi(this)}")
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     override fun onResume() {
