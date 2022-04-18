@@ -29,7 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.feature_node.domain.model.Measurement
 import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
@@ -160,19 +162,94 @@ fun HistoryDrawerScreen(
                         },
                         dismissContent = {
                             Card(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
                                 elevation = animateDpAsState(
                                     if (dismissState.dismissDirection != null) 4.dp else 0.dp
                                 ).value
                             ) {
-                                ListItem(
-                                    text = {
-                                        Text(
-                                            item.title,
-                                            fontWeight = if (unread) FontWeight.Bold else null
+                                Column {
+                                    Text(
+                                        text = item.title,
+                                        fontSize = 50.sp,
+                                        fontWeight = if (unread) FontWeight.Bold else null
+                                    )
+                                    Row {
+                                        Spacer(
+                                            modifier = Modifier
+                                                .width(32.dp)
                                         )
-                                    },
-                                    secondaryText = { Text("Swipe me left or right!") }
-                                )
+                                        Text(
+                                            modifier = Modifier
+                                                .align(alignment = Alignment.Bottom),
+                                            text = "W",
+                                            fontSize = 18.sp,
+                                            fontWeight = if (unread) FontWeight.Bold else null,
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .width(100.dp)
+                                                .align(alignment = Alignment.Bottom),
+                                            text = item.width.toString(),
+                                            fontSize = 40.sp,
+                                            fontWeight = if (unread) FontWeight.Bold else null,
+                                            textAlign = TextAlign.Right
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .width(60.dp)
+                                                .align(alignment = Alignment.Bottom),
+                                            text = when (viewModel.lengthScale.value.scale) {
+                                                RulerScale.Inch -> "IN"
+                                                RulerScale.Centimeter -> "CM"
+                                            },
+                                            fontSize = 18.sp,
+                                            fontWeight = if (unread) FontWeight.Bold else null,
+                                            textAlign = TextAlign.Right
+                                        )
+                                        Spacer(
+                                            modifier = Modifier
+                                                .width(32.dp)
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .align(alignment = Alignment.Bottom),
+                                            text = "H",
+                                            fontSize = 18.sp,
+                                            fontWeight = if (unread) FontWeight.Bold else null,
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .width(100.dp)
+                                                .align(alignment = Alignment.Bottom),
+                                            text = item.height.toString(),
+                                            fontSize = 40.sp,
+                                            fontWeight = if (unread) FontWeight.Bold else null,
+                                            textAlign = TextAlign.Right
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .width(60.dp)
+                                                .align(alignment = Alignment.Bottom),
+                                            text = when (viewModel.lengthScale.value.scale) {
+                                                RulerScale.Inch -> "IN"
+                                                RulerScale.Centimeter -> "CM"
+                                            },
+                                            fontSize = 18.sp,
+                                            fontWeight = if (unread) FontWeight.Bold else null,
+                                            textAlign = TextAlign.Right
+                                        )
+                                    }
+                                }
+//                                ListItem(
+//                                    text = {
+//                                        Text(
+//                                            item.title,
+//                                            fontWeight = if (unread) FontWeight.Bold else null
+//                                        )
+//                                    },
+////                                    secondaryText = { Text("Swipe me left or right!") }
+//                                )
                             }
                         }
                     )
