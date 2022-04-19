@@ -11,9 +11,14 @@ import androidx.lifecycle.viewModelScope
 import com.rulhouse.ruler.feature_node.domain.model.InvalidMeasurementException
 import com.rulhouse.ruler.feature_node.domain.model.Measurement
 import com.rulhouse.ruler.feature_node.domain.use_case.MeasurementUseCases
+import com.rulhouse.ruler.feature_node.domain.util.MeasurementOrder
+import com.rulhouse.ruler.feature_node.domain.util.OrderType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,6 +27,10 @@ import javax.inject.Inject
 class RulerViewModel @Inject constructor(
     private val measurementUseCases: MeasurementUseCases,
 ) : ViewModel() {
+
+    private val _state = mutableStateOf(RulerState())
+    val state: State<RulerState> = _state
+
     private val _drawerState = mutableStateOf(
         BottomDrawerState(BottomDrawerValue.Closed)
     )
@@ -43,9 +52,21 @@ class RulerViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var currentMeasurementId: Int? = null
+
+    private var getNotesJob: Job? = null
+
+    init {
+        getMeasurements(MeasurementOrder.Date(OrderType.Descending))
+    }
+
     fun onEvent(event: RulerEvent) {
         viewModelScope.launch {
             when (event) {
+                is RulerEvent.DeleteMeasurement -> {
+                    viewModelScope.launch {
+                        measurementUseCases.deleteMeasurement(event.measurement)
+                    }
+                }
                 is RulerEvent.SetScale -> {
                     _lengthScale.value = lengthScale.value.copy(
                         scale = event.scale
@@ -113,5 +134,17 @@ class RulerViewModel @Inject constructor(
                 else -> {}
             }
         }
+    }
+
+    private fun getMeasurements(measurementOrder: MeasurementOrder) {
+        getNotesJob?.cancel()
+        getNotesJob = measurementUseCases.getMeasurements(measurementOrder)
+            .onEach { measurements ->
+                _state.value = state.value.copy(
+                    measurements = measurements,
+                    noteOrder = measurementOrder
+                )
+            }
+            .launchIn(viewModelScope)
     }
 }

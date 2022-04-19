@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rulhouse.ruler.activity.ScreenMethods
 import com.rulhouse.ruler.feature_node.domain.model.Measurement
 import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
 
@@ -41,6 +42,7 @@ import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
 fun HistoryDrawerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
+    val state = viewModel.state.value
     val measurements = remember { mutableStateListOf<Measurement>() }
     measurements.swapList(MeasurementProvider.measurementList)
 
@@ -96,13 +98,14 @@ fun HistoryDrawerScreen(
             LazyColumn(
 
             ) {
-                items(measurements) { item ->
+                items(state.measurements) { item ->
                     var unread by remember { mutableStateOf(false) }
                     val dismissState = rememberDismissState(
                         confirmStateChange = {
                             if (it == DismissValue.DismissedToEnd) unread = !unread
                             else if (it == DismissValue.DismissedToStart) {
-                                measurements.remove(item)
+                                Log.d("Delete", "item.title = ${item.title}")
+                                viewModel.onEvent(RulerEvent.DeleteMeasurement(item))
                             }
                             false
                         }
@@ -190,7 +193,7 @@ fun HistoryDrawerScreen(
                                             modifier = Modifier
                                                 .width(100.dp)
                                                 .align(alignment = Alignment.Bottom),
-                                            text = item.width.toString(),
+                                            text = "%.2f".format(item.width),
                                             fontSize = 40.sp,
                                             fontWeight = if (unread) FontWeight.Bold else null,
                                             textAlign = TextAlign.Right
@@ -222,7 +225,7 @@ fun HistoryDrawerScreen(
                                             modifier = Modifier
                                                 .width(100.dp)
                                                 .align(alignment = Alignment.Bottom),
-                                            text = item.height.toString(),
+                                            text = "%.2f".format(item.height),
                                             fontSize = 40.sp,
                                             fontWeight = if (unread) FontWeight.Bold else null,
                                             textAlign = TextAlign.Right
@@ -241,15 +244,6 @@ fun HistoryDrawerScreen(
                                         )
                                     }
                                 }
-//                                ListItem(
-//                                    text = {
-//                                        Text(
-//                                            item.title,
-//                                            fontWeight = if (unread) FontWeight.Bold else null
-//                                        )
-//                                    },
-////                                    secondaryText = { Text("Swipe me left or right!") }
-//                                )
                             }
                         }
                     )
