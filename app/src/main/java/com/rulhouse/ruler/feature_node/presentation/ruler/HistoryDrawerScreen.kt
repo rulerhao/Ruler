@@ -16,6 +16,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -62,6 +63,20 @@ fun HistoryDrawerScreen(
                 )
                 .padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
+
+            IconButton(
+                modifier = Modifier,
+//                    .align(alignment = Alignment.TopEnd),
+                onClick = {
+
+                }
+            ) {
+                Icon(
+                    Icons.Rounded.Edit,
+                    contentDescription = "Edit",
+                    tint = Color.Blue
+                )
+            }
             Row(
 
             ) {
@@ -98,154 +113,10 @@ fun HistoryDrawerScreen(
             LazyColumn(
 
             ) {
-                items(state.measurements) { item ->
-                    var unread by remember { mutableStateOf(false) }
-                    val dismissState = rememberDismissState(
-                        confirmStateChange = {
-                            if (it == DismissValue.DismissedToEnd) unread = !unread
-                            else if (it == DismissValue.DismissedToStart) {
-                                Log.d("Delete", "item.title = ${item.title}")
-                                viewModel.onEvent(RulerEvent.DeleteMeasurement(item))
-                            }
-                            false
-                        }
-                    )
-
-                    SwipeToDismiss(
-                        state = dismissState,
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        directions = setOf(
-                            DismissDirection.StartToEnd,
-                            DismissDirection.EndToStart
-                        ),
-                        dismissThresholds = { direction ->
-                            // threshold of swiping from left to right or right to left.
-                            FractionalThreshold(
-                                if (direction == DismissDirection.StartToEnd) 0.25f
-                                else 0.5f
-                            )
-                        },
-                        background = {
-                            val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-                            val color by animateColorAsState(
-                                // if "FractionalThreshold" goes over 0.25f (which is StartToEnd's
-                                // threshold than trigger DismissedToEnd)
-                                when (dismissState.targetValue) {
-                                    DismissValue.Default -> Color.LightGray
-                                    DismissValue.DismissedToEnd -> Color.Green
-                                    DismissValue.DismissedToStart -> Color.Red
-                                }
-                            )
-                            val alignment = when (direction) {
-                                DismissDirection.StartToEnd -> Alignment.CenterStart
-                                DismissDirection.EndToStart -> Alignment.CenterEnd
-                            }
-                            val icon = when (direction) {
-                                DismissDirection.StartToEnd -> Icons.Default.Done
-                                DismissDirection.EndToStart -> Icons.Default.Delete
-                            }
-                            val scale by animateFloatAsState(
-                                if (dismissState.targetValue == DismissValue.Default) 0.75f
-                                else 1f
-                            )
-
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(color)
-                                    .padding(horizontal = 20.dp),
-                                contentAlignment = alignment
-                            ) {
-                                Icon(
-                                    icon,
-                                    contentDescription = "Localized description",
-                                    modifier = Modifier.scale(scale)
-                                )
-                            }
-                        },
-                        dismissContent = {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                elevation = animateDpAsState(
-                                    if (dismissState.dismissDirection != null) 4.dp else 0.dp
-                                ).value
-                            ) {
-                                Column {
-                                    Text(
-                                        text = item.title,
-                                        fontSize = 50.sp,
-                                        fontWeight = if (unread) FontWeight.Bold else null
-                                    )
-                                    Row {
-                                        Spacer(
-                                            modifier = Modifier
-                                                .width(32.dp)
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .align(alignment = Alignment.Bottom),
-                                            text = "W",
-                                            fontSize = 18.sp,
-                                            fontWeight = if (unread) FontWeight.Bold else null,
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .width(100.dp)
-                                                .align(alignment = Alignment.Bottom),
-                                            text = "%.2f".format(item.width),
-                                            fontSize = 40.sp,
-                                            fontWeight = if (unread) FontWeight.Bold else null,
-                                            textAlign = TextAlign.Right
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .width(60.dp)
-                                                .align(alignment = Alignment.Bottom),
-                                            text = when (viewModel.lengthScale.value.scale) {
-                                                RulerScale.Inch -> "IN"
-                                                RulerScale.Centimeter -> "CM"
-                                            },
-                                            fontSize = 18.sp,
-                                            fontWeight = if (unread) FontWeight.Bold else null,
-                                            textAlign = TextAlign.Right
-                                        )
-                                        Spacer(
-                                            modifier = Modifier
-                                                .width(32.dp)
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .align(alignment = Alignment.Bottom),
-                                            text = "H",
-                                            fontSize = 18.sp,
-                                            fontWeight = if (unread) FontWeight.Bold else null,
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .width(100.dp)
-                                                .align(alignment = Alignment.Bottom),
-                                            text = "%.2f".format(item.height),
-                                            fontSize = 40.sp,
-                                            fontWeight = if (unread) FontWeight.Bold else null,
-                                            textAlign = TextAlign.Right
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .width(60.dp)
-                                                .align(alignment = Alignment.Bottom),
-                                            text = when (viewModel.lengthScale.value.scale) {
-                                                RulerScale.Inch -> "IN"
-                                                RulerScale.Centimeter -> "CM"
-                                            },
-                                            fontSize = 18.sp,
-                                            fontWeight = if (unread) FontWeight.Bold else null,
-                                            textAlign = TextAlign.Right
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                items(state.measurements) { measurement ->
+                    BottomDrawerItem(
+                        measurement = measurement,
+                        unread = false
                     )
                 }
             }

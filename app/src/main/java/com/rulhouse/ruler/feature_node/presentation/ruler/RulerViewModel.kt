@@ -142,7 +142,7 @@ class RulerViewModel @Inject constructor(
             .onEach { measurements ->
                 _state.value = state.value.copy(
                     measurements = measurements,
-                    noteOrder = measurementOrder
+                    measureOrder = measurementOrder
                 )
             }
             .launchIn(viewModelScope)
