@@ -63,51 +63,55 @@ fun HistoryDrawerScreen(
                 )
                 .padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
-
-            IconButton(
-                modifier = Modifier,
-//                    .align(alignment = Alignment.TopEnd),
-                onClick = {
-
-                }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                Icon(
-                    Icons.Rounded.Edit,
-                    contentDescription = "Edit",
-                    tint = Color.Blue
-                )
-            }
-            Row(
+                Row(
 
-            ) {
-                TextField(
-                    value = textState.value,
-                    onValueChange = { textState.value = it },
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Text
-                    ),
-                )
-                Button(
-                    onClick = {
-                        Log.d("TestTextView", "OnDone")
-                        viewModel.onEvent(
-                            RulerEvent.SaveMeasurement(
-                                title = textState.value.text,
-                                size = Size(
-                                    viewModel.scaleAreaWidth.value,
-                                    viewModel.scaleAreaHeight.value
+                ) {
+                    TextField(
+                        value = textState.value,
+                        onValueChange = { textState.value = it },
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done,
+                            keyboardType = KeyboardType.Text
+                        ),
+                    )
+                    Button(
+                        onClick = {
+                            Log.d("TestTextView", "OnDone")
+                            viewModel.onEvent(
+                                RulerEvent.SaveMeasurement(
+                                    title = textState.value.text,
+                                    size = Size(
+                                        viewModel.scaleAreaWidth.value,
+                                        viewModel.scaleAreaHeight.value
+                                    )
                                 )
                             )
-                        )
+                        }
+                    ) {
+
+                    }
+                }
+                IconButton(
+                    modifier = Modifier
+                        .align(alignment = Alignment.TopEnd),
+                    onClick = {
+
                     }
                 ) {
-
+                    Icon(
+                        Icons.Rounded.Edit,
+                        contentDescription = "Edit",
+                        tint = Color.Blue
+                    )
                 }
             }
             LazyColumn(

@@ -10,9 +10,9 @@ class AddMeasurement (
 ) {
     @Throws(InvalidMeasurementException::class)
     suspend operator fun invoke(measurement: Measurement) {
-        if(measurement.title.isBlank()) {
-            throw InvalidMeasurementException("The title of the note can't be empty.")
-        }
+//        if(measurement.title.isBlank()) {
+//            throw InvalidMeasurementException("The title of the note can't be empty.")
+//        }
         repository.insertMeasurement(measurement)
     }
 }
