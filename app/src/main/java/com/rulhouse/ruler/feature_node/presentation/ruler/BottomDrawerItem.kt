@@ -2,6 +2,7 @@ package com.rulhouse.ruler.feature_node.presentation.ruler
 
 import android.icu.text.SimpleDateFormat
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -9,6 +10,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -34,10 +36,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.activity.ScreenMethods
 import com.rulhouse.ruler.feature_node.domain.model.Measurement
 import com.rulhouse.ruler.methods.TimeMethods
+import com.rulhouse.ruler.ui.theme.SecondaryLightColor
 import java.util.*
 import kotlin.math.abs
 
@@ -48,22 +52,23 @@ fun BottomDrawerItem(
     measurement: Measurement,
     unread: Boolean
 ) {
-    val pressState = remember { mutableStateOf(false) }
-    val itemWidth = remember {mutableStateOf(0f) }
-    val itemX = remember { mutableStateOf (0f) }
+    val itemWidth = remember { mutableStateOf(0f) }
+    val itemX = remember { mutableStateOf(0f) }
 
+    val isEdit = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .offset(x = ScreenMethods.convertPixelToDp(itemX.value, LocalContext.current).dp)
             .pointerInput(Unit) {
                 detectDragGesturesAfterLongPress(
-                    onDragStart =  {
+                    onDragStart = {
 
                     },
                     onDragEnd = {
                         if (abs(itemX.value) > itemWidth.value / 4) {
                             if (itemX.value > 0) {
+                                isEdit.value = true
                                 Log.d("TestDragToDismiss", "focusRequester.requestFocus() A")
                             } else {
                                 Log.d("TestDragToDismiss", "focusRequester.requestFocus() B")
@@ -181,10 +186,20 @@ fun BottomDrawerItem(
                         .align(Alignment.End)
                 ) {
                     Text(
-                        text = TimeMethods.getTimeString(LocalContext.current, measurement.timeStamp)
+                        text = TimeMethods.getTimeString(
+                            LocalContext.current,
+                            measurement.timeStamp
+                        )
                     )
                 }
             }
         }
+    }
+    if (isEdit.value) {
+        BottomDrawerEditDialog(
+            onDismissRequest = {
+                isEdit.value = false
+            }
+        )
     }
 }
