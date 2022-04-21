@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.activity.ScreenMethods
 import com.rulhouse.ruler.methods.ScaleTextGetter
 import com.rulhouse.ruler.methods.ScaleTextPositionGetter
+import com.rulhouse.ruler.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
@@ -339,6 +340,7 @@ fun PreviewBlend(
     val topTextPaint = android.graphics.Paint()
     topTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
     topTextPaint.textSize = scaleAreaTextSize
+    topTextPaint.color = TextOnPColor.toArgb()
     val topTextOffset = Offset(
         x = scaleAreaTopLeft.x + scaleAreaSize.width / 2,
         y = scaleAreaTopLeft.y
@@ -361,6 +363,7 @@ fun PreviewBlend(
     val leftTextPaint = android.graphics.Paint()
     leftTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
     leftTextPaint.textSize = scaleAreaTextSize
+    leftTextPaint.color = TextOnPColor.toArgb()
     val leftTextOffset = Offset(
         x = scaleAreaTopLeft.x,
         y = scaleAreaTopLeft.y + scaleAreaSize.height / 2
@@ -388,10 +391,12 @@ fun PreviewBlend(
     val scaleWidthLineTextPaint = android.graphics.Paint()
     scaleWidthLineTextPaint.textAlign = android.graphics.Paint.Align.CENTER
     scaleWidthLineTextPaint.textSize = scaleTextSize
+    scaleWidthLineTextPaint.color = TextOnPColor.toArgb()
     // Scale height line text
     val scaleHeightLineTextPaint = android.graphics.Paint()
     scaleHeightLineTextPaint.textAlign = android.graphics.Paint.Align.LEFT
     scaleHeightLineTextPaint.textSize = scaleTextSize
+    scaleHeightLineTextPaint.color = TextOnPColor.toArgb()
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -454,9 +459,9 @@ fun PreviewBlend(
              * Scale area
              */
             drawRect(
-                color = Color.Red,
+                color = PrimaryColor,
                 topLeft = scaleAreaTopLeft,
-                size = scaleAreaSize,
+                size = scaleAreaSize
             )
 
             /**
@@ -482,7 +487,7 @@ fun PreviewBlend(
                     )
                 }
                 drawLine(
-                    color = Color.Blue,
+                    color = SecondaryColor,
                     start = Offset(location, 0f),
                     end = Offset(location, scaleStrokeLength),
                     strokeWidth = scaleStrokeWidth,
@@ -491,7 +496,7 @@ fun PreviewBlend(
 
                 val halfLocation = i * scaleLengthPerUnit + scaleLengthPerUnit / 2
                 drawLine(
-                    color = Color.Blue,
+                    color = SecondaryDarkColor,
                     start = Offset(halfLocation, 0f),
                     end = Offset(halfLocation, scaleStrokeLength / 2),
                     strokeWidth = scaleStrokeWidth / 2,
@@ -502,7 +507,7 @@ fun PreviewBlend(
             for (i in 0..((size.width / (scaleLengthPerUnit / 10)).toInt())) {
                 val location = i * scaleLengthPerUnit / 10
                 drawLine(
-                    color = Color.Blue,
+                    color = SecondaryLightColor,
                     start = Offset(location, 0f),
                     end = Offset(location, scaleStrokeLength / 3),
                     strokeWidth = scaleStrokeWidth / 3,
@@ -523,7 +528,7 @@ fun PreviewBlend(
                     )
                 }
                 drawLine(
-                    color = Color.Blue,
+                    color = SecondaryColor,
                     start = Offset(0f, location),
                     end = Offset(scaleStrokeLength, location),
                     strokeWidth = scaleStrokeWidth,
@@ -532,7 +537,7 @@ fun PreviewBlend(
 
                 val halfLocation = i * scaleLengthPerUnit + scaleLengthPerUnit / 2
                 drawLine(
-                    color = Color.Blue,
+                    color = SecondaryDarkColor,
                     start = Offset(0f, halfLocation),
                     end = Offset(scaleStrokeLength / 2, halfLocation),
                     strokeWidth = scaleStrokeWidth / 2,
@@ -543,7 +548,7 @@ fun PreviewBlend(
             for (i in 0..((size.height / (scaleLengthPerUnit / 10)).toInt())) {
                 val location = i * scaleLengthPerUnit / 10
                 drawLine(
-                    color = Color.Blue,
+                    color = SecondaryLightColor,
                     start = Offset(0f, location),
                     end = Offset(scaleStrokeLength / 3, location),
                     strokeWidth = scaleStrokeWidth / 3,
