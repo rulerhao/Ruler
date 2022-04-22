@@ -127,6 +127,17 @@ class RulerViewModel @Inject constructor(
                         }
                     }
                 }
+                is RulerEvent.EditMeasurement -> {
+                    viewModelScope.launch {
+                        try {
+                            measurementUseCases.addMeasurement(
+                                event.measurement
+                            )
+                        }
+                        catch (e: InvalidMeasurementException) {
+                        }
+                    }
+                }
                 is RulerEvent.ChangeScaleAreaSize -> {
                     _scaleAreaWidth.value = event.size.width
                     _scaleAreaHeight.value = event.size.height

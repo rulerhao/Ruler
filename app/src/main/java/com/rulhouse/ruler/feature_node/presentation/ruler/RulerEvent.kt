@@ -8,6 +8,7 @@ sealed class RulerEvent {
     data class StartChangeScaleAnimation(val scale: RulerScale): RulerEvent()
     data class SetScale(val scale: RulerScale): RulerEvent()
     data class SaveMeasurement(val title: String, val size: Size): RulerEvent()
+    data class EditMeasurement(val measurement: Measurement): RulerEvent()
     data class ChangeScaleAreaSize(val size: Size): RulerEvent()
     object ToggleSaveDrawer: RulerEvent()
     object SwitchScale: RulerEvent()

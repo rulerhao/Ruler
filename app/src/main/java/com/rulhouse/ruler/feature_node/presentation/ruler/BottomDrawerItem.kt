@@ -197,8 +197,24 @@ fun BottomDrawerItem(
     }
     if (isEdit.value) {
         BottomDrawerEditDialog(
+            measurement = measurement,
             onDismissRequest = {
                 isEdit.value = false
+            },
+            onOkClick = { title ->
+                if (title.isNotBlank()) {
+                    viewModel.onEvent(
+                        RulerEvent.EditMeasurement(
+                            Measurement(
+                                title = title,
+                                width = measurement.width,
+                                height = measurement.height,
+                                timeStamp = measurement.timeStamp,
+                                id = measurement.id
+                            )
+                        )
+                    )
+                }
             }
         )
     }
