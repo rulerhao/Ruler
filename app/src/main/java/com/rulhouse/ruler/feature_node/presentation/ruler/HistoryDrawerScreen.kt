@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.activity.ScreenMethods
 import com.rulhouse.ruler.feature_node.domain.model.Measurement
 import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
+import com.rulhouse.ruler.ui.theme.PrimaryLightColor
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -55,7 +56,7 @@ fun HistoryDrawerScreen(
         Column(
             modifier = Modifier
                 .background(
-                    color = Color.White,
+                    color = PrimaryLightColor,
                     shape = RoundedCornerShape(20.dp)
                 )
                 .padding(horizontal = 32.dp, vertical = 8.dp)
