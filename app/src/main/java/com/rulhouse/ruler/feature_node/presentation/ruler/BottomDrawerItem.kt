@@ -69,9 +69,9 @@ fun BottomDrawerItem(
                         if (abs(itemX.value) > itemWidth.value / 4) {
                             if (itemX.value > 0) {
                                 isEdit.value = true
-                                Log.d("TestDragToDismiss", "focusRequester.requestFocus() A")
+                                itemX.value = 0f
                             } else {
-                                Log.d("TestDragToDismiss", "focusRequester.requestFocus() B")
+                                itemX.value = 0f
                             }
                         } else {
                             itemX.value = 0f
@@ -80,16 +80,6 @@ fun BottomDrawerItem(
                 ) { change, dragAmount ->
                     itemX.value = itemX.value + dragAmount.x
                 }
-//                detectDragGestures(
-//                    onDragStart = {
-//
-//                    },
-//                    onDragEnd = {
-//
-//                    }
-//                ) { change, dragAmount ->
-////                    itemX.value = itemX.value + dragAmount.x
-//                }
             }
             .onGloballyPositioned { layoutCoordinates ->
                 itemWidth.value = layoutCoordinates.size.width.toFloat()

@@ -47,9 +47,6 @@ fun HistoryDrawerScreen(
     val measurements = remember { mutableStateListOf<Measurement>() }
     measurements.swapList(MeasurementProvider.measurementList)
 
-    val textState = remember { mutableStateOf(TextFieldValue()) }
-
-    val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier
             .padding(all = 32.dp)
@@ -63,57 +60,6 @@ fun HistoryDrawerScreen(
                 )
                 .padding(horizontal = 32.dp, vertical = 8.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Row(
-
-                ) {
-                    TextField(
-                        value = textState.value,
-                        onValueChange = { textState.value = it },
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                focusManager.clearFocus()
-                            }
-                        ),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Text
-                        ),
-                    )
-                    Button(
-                        onClick = {
-                            Log.d("TestTextView", "OnDone")
-                            viewModel.onEvent(
-                                RulerEvent.SaveMeasurement(
-                                    title = textState.value.text,
-                                    size = Size(
-                                        viewModel.scaleAreaWidth.value,
-                                        viewModel.scaleAreaHeight.value
-                                    )
-                                )
-                            )
-                        }
-                    ) {
-
-                    }
-                }
-                IconButton(
-                    modifier = Modifier
-                        .align(alignment = Alignment.TopEnd),
-                    onClick = {
-
-                    }
-                ) {
-                    Icon(
-                        Icons.Rounded.Edit,
-                        contentDescription = "Edit",
-                        tint = Color.Blue
-                    )
-                }
-            }
             LazyColumn(
 
             ) {
