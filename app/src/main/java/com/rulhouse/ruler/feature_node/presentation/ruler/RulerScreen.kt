@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddComment
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +30,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.rulhouse.ruler.R
 import com.rulhouse.ruler.activity.ScreenMethods
+import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
 import com.rulhouse.ruler.ui.theme.RulerTheme
 import kotlinx.coroutines.launch
 import kotlin.math.pow
@@ -85,6 +88,28 @@ fun RulerScreen(
                         contentDescription = "History",
                     )
                 }
+            }
+            Button(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .align(Alignment.BottomEnd),
+                onClick = {
+                    viewModel.onEvent(
+                        RulerEvent.SaveMeasurement(
+                            title = "",
+                            size = Size(
+                                viewModel.scaleAreaWidth.value,
+                                viewModel.scaleAreaHeight.value
+                            )
+                        )
+                    )
+                },
+                shape = CircleShape,
+            ) {
+                Icon(
+                    Icons.Rounded.Add,
+                    contentDescription = "History",
+                )
             }
         }
     }
