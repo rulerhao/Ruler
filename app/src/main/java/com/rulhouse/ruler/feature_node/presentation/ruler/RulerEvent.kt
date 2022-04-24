@@ -10,6 +10,7 @@ sealed class RulerEvent {
     data class EditMeasurement(val measurement: Measurement): RulerEvent()
     data class DeleteMeasurement(val measurement: Measurement): RulerEvent()
     data class ChangeScaleAreaSize(val size: Size): RulerEvent()
+    object RestoreNote: RulerEvent()
     object ToggleSaveDrawer: RulerEvent()
     object SwitchScale: RulerEvent()
 }

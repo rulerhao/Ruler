@@ -1,55 +1,73 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
-import android.graphics.Point
 import android.util.Log
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.SaveAlt
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.AddComment
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Save
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.rulhouse.ruler.R
-import com.rulhouse.ruler.activity.ScreenMethods
 import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
-import com.rulhouse.ruler.ui.theme.RulerTheme
-import kotlinx.coroutines.launch
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-    val scaleChangeButtonText = when(viewModel.lengthScale.value.scale) {
+    val scaleChangeButtonText = when (viewModel.lengthScale.value.scale) {
         RulerScale.Centimeter -> {
             "IN"
         }
         RulerScale.Inch -> {
             "CM"
+        }
+    }
+
+    val snackbarState = remember { mutableStateOf(false) }
+    val snackbarMessageState = remember { mutableStateOf("") }
+    val snackbarActionMessageState = remember { mutableStateOf("") }
+    val snackbarRestoreActionEventState = remember { mutableStateOf(RulerUiEvent.UiEvent.None) }
+    var snackbarJob: Job? = null
+
+    LaunchedEffect(
+        key1 = true
+    ) {
+        viewModel.uiEventFlow.collectLatest { event ->
+            when (event) {
+                is RulerUiEvent.ShowSnackbar -> {
+                }
+                is RulerUiEvent.DeleteMeasurement -> {
+                    snackbarState.value = true
+                    snackbarMessageState.value = "Measurement deleted"
+                    snackbarActionMessageState.value = "Undo"
+                    snackbarRestoreActionEventState.value = RulerUiEvent.UiEvent.DeleteMeasurement
+
+                    snackbarJob?.cancel()
+                    snackbarJob = GlobalScope.launch {
+                        delay(2000L)
+                        snackbarState.value = false
+                    }
+                }
+                is RulerUiEvent.SaveMeasurement -> {
+                    snackbarState.value = true
+                    snackbarMessageState.value = "Saved measurement!"
+                    snackbarRestoreActionEventState.value = RulerUiEvent.UiEvent.SaveMeasurement
+
+                    snackbarJob?.cancel()
+                    snackbarJob = GlobalScope.launch {
+                        delay(1000L)
+                        snackbarState.value = false
+                    }
+                }
+            }
         }
     }
 
@@ -116,4 +134,33 @@ fun RulerScreen(
             }
         }
     }
+    if (snackbarState.value) {
+        Snackbar(
+            modifier = Modifier
+                .padding(16.dp),
+            action = {
+                when (snackbarRestoreActionEventState.value) {
+                    RulerUiEvent.UiEvent.DeleteMeasurement -> {
+                        Button(
+                            onClick = {
+                                snackbarJob?.cancel()
+                                snackbarState.value = false
+                                viewModel.onEvent(RulerEvent.RestoreNote)
+                            }
+                        ) {
+                            Text(text = snackbarActionMessageState.value)
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        ) {
+            Text(text = snackbarMessageState.value)
+        }
+    }
+}
+
+@Composable
+fun RulerSnackbar() {
+
 }

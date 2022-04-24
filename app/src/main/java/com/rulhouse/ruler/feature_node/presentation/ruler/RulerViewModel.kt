@@ -47,9 +47,14 @@ class RulerViewModel @Inject constructor(
     private val _scaleAreaHeight = mutableStateOf(0.0f)
     val scaleAreaHeight: State<Float> = _scaleAreaHeight
 
+    private var recentlyDeletedNote: Measurement? = null
     // Flow
     private val _eventFlow = MutableSharedFlow<RulerEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    // Flow
+    private val _uiEventFlow = MutableSharedFlow<RulerUiEvent>()
+    val uiEventFlow = _uiEventFlow.asSharedFlow()
 
     private var currentMeasurementId: Int? = null
 
@@ -64,7 +69,13 @@ class RulerViewModel @Inject constructor(
             when (event) {
                 is RulerEvent.DeleteMeasurement -> {
                     viewModelScope.launch {
-                        measurementUseCases.deleteMeasurement(event.measurement)
+                        try {
+                            measurementUseCases.deleteMeasurement(event.measurement)
+                            recentlyDeletedNote = event.measurement
+                            _uiEventFlow.emit(RulerUiEvent.DeleteMeasurement)
+                        }
+                        catch (e: InvalidMeasurementException) {
+                        }
                     }
                 }
                 is RulerEvent.SetScale -> {
@@ -76,6 +87,12 @@ class RulerViewModel @Inject constructor(
                             scale = event.scale
                         )
                     )
+                }
+                is RulerEvent.RestoreNote -> {
+                    viewModelScope.launch thisLaunch@ {
+                        measurementUseCases.addMeasurement(recentlyDeletedNote ?: return@thisLaunch)
+                        recentlyDeletedNote = null
+                    }
                 }
                 is RulerEvent.ToggleSaveDrawer -> {
                     _drawerState.value = when(_drawerState.value.currentValue) {
@@ -113,6 +130,9 @@ class RulerViewModel @Inject constructor(
                                     timeStamp = System.currentTimeMillis(),
                                     id = currentMeasurementId
                                 )
+                            )
+                            _uiEventFlow.emit(
+                                RulerUiEvent.SaveMeasurement
                             )
                         }
                         catch (e: InvalidMeasurementException) {
