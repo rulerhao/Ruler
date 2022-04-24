@@ -5,10 +5,12 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,30 +47,33 @@ import com.rulhouse.ruler.ui.theme.PrimaryLightColor
 fun HistoryDrawerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val state = viewModel.state.value
     val measurements = remember { mutableStateListOf<Measurement>() }
     measurements.swapList(MeasurementProvider.measurementList)
 
+    val rangeToTop = ScreenMethods.convertPixelToDp(
+        ScreenMethods.getHeight(context = context).toFloat(),
+        context = context
+    ) / 4
     Box(
         modifier = Modifier
-            .padding(all = 32.dp)
+            .padding(top = rangeToTop.dp)
             .background(color = Color.Transparent)
     ) {
         Column(
             modifier = Modifier
                 .background(
-                    color = PrimaryLightColor,
-                    shape = RoundedCornerShape(20.dp)
+                    color = Color.White,
                 )
-                .padding(horizontal = 32.dp, vertical = 8.dp)
+//                .padding(8.dp),
         ) {
             LazyColumn(
-
+                modifier = Modifier
             ) {
                 items(state.measurements) { measurement ->
                     BottomDrawerItem(
-                        measurement = measurement,
-                        unread = false
+                        measurement = measurement
                     )
                 }
             }

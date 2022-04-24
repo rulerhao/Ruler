@@ -21,6 +21,10 @@ class ScreenMethods {
             return dp * getDensity(context)
         }
 
+        fun convertDpToPixel(dp: Int, context: Context): Int {
+            return (dp * getDensity(context)).toInt()
+        }
+
         /**
          * Covert px to dp
          * @param px
@@ -29,6 +33,10 @@ class ScreenMethods {
          */
         fun convertPixelToDp(px: Float, context: Context): Float {
             return px / getDensity(context)
+        }
+
+        fun convertPixelToDp(px: Int, context: Context): Int {
+            return (px / getDensity(context)).toInt()
         }
 
         /**

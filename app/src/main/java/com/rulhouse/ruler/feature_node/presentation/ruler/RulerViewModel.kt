@@ -105,7 +105,6 @@ class RulerViewModel @Inject constructor(
                 is RulerEvent.SaveMeasurement -> {
                     viewModelScope.launch {
                         try {
-                            Log.d("testAddEditNote", "First")
                             measurementUseCases.addMeasurement(
                                 Measurement(
                                     title = event.title,
@@ -115,15 +114,8 @@ class RulerViewModel @Inject constructor(
                                     id = currentMeasurementId
                                 )
                             )
-                            Log.d("testAddEditNote", "SaveNote noteID = $currentMeasurementId")
-//                            _eventFlow.emit(UiEvent.SaveNote)
                         }
                         catch (e: InvalidMeasurementException) {
-//                            _eventFlow.emit(
-//                                UiEvent.ShowSnackbar(
-//                                    message = e.message ?: "Couldn't save note"
-//                                )
-//                            )
                         }
                     }
                 }

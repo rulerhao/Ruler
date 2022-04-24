@@ -99,10 +99,10 @@ fun BottomDrawerSwipeToDismissItem(
                     if (dismissState.dismissDirection != null) 4.dp else 0.dp
                 ).value
             ) {
-                BottomDrawerItem(
-                    measurement = measurement,
-                    unread = unread
-                )
+//                BottomDrawerItem(
+//                    measurement = measurement,
+//                    unread = unread
+//                )
             }
         }
     )
