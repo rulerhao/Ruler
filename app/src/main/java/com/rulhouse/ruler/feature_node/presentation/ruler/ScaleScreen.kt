@@ -28,40 +28,9 @@ import kotlin.math.abs
 fun ScaleScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-    val lengthScale = viewModel.state
+    val state = viewModel.state.value
 
-    val animateFloat = remember {
-        Animatable(
-            0f
-        )
-    }
-
-    LaunchedEffect(animateFloat) {
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is RulerEvent.StartChangeScaleAnimation -> {
-                    animateFloat.animateTo(
-                        targetValue = 1f,
-                        animationSpec = keyframes {
-                            durationMillis = 500
-                            0f at 0
-                            1f at durationMillis
-                        }
-                    )
-                    animateFloat.animateTo(
-                        targetValue = 0f,
-                        animationSpec = keyframes {
-                            durationMillis = 500
-                            1f at 0
-                            0f at durationMillis
-                        }
-                    )
-                }
-                else -> {}
-            }
-        }
-    }
-    PreviewBlend(lengthScale.value.scale)
+    PreviewBlend(state.scale)
 }
 
 @Preview
