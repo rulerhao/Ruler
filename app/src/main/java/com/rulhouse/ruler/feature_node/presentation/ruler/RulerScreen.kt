@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun RulerScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-    val scaleChangeButtonText = when (viewModel.lengthScale.value.scale) {
+    val scaleChangeButtonText = when (viewModel.state.value.scale) {
         RulerScale.Centimeter -> {
             "IN"
         }
@@ -118,10 +118,7 @@ fun RulerScreen(
                     viewModel.onEvent(
                         RulerEvent.SaveMeasurement(
                             title = "",
-                            size = Size(
-                                viewModel.scaleAreaWidth.value,
-                                viewModel.scaleAreaHeight.value
-                            )
+                            size = viewModel.state.value.scaleAreaSize
                         )
                     )
                 },

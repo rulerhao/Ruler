@@ -1,11 +1,15 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
+import android.app.Application
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.util.Log
 import androidx.compose.material.BottomDrawerState
 import androidx.compose.material.BottomDrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rulhouse.ruler.feature_node.domain.model.InvalidMeasurementException
@@ -13,6 +17,7 @@ import com.rulhouse.ruler.feature_node.domain.model.Measurement
 import com.rulhouse.ruler.feature_node.domain.use_case.MeasurementUseCases
 import com.rulhouse.ruler.feature_node.domain.util.MeasurementOrder
 import com.rulhouse.ruler.feature_node.domain.util.OrderType
+import com.rulhouse.ruler.feature_node.shared_pref.SharedPref
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,9 +30,9 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(ExperimentalMaterialApi::class)
 class RulerViewModel @Inject constructor(
+    application: Application,
     private val measurementUseCases: MeasurementUseCases,
-) : ViewModel() {
-
+) : AndroidViewModel(application) {
     private val _state = mutableStateOf(RulerState())
     val state: State<RulerState> = _state
 
@@ -35,17 +40,6 @@ class RulerViewModel @Inject constructor(
         BottomDrawerState(BottomDrawerValue.Closed)
     )
     val drawerState: State<BottomDrawerState> = _drawerState
-
-    private val _lengthScale = mutableStateOf(RulerState(
-        scale = RulerScale.Centimeter
-    ))
-    val lengthScale: State<RulerState> = _lengthScale
-
-    private val _scaleAreaWidth = mutableStateOf(0.0f)
-    val scaleAreaWidth: State<Float> = _scaleAreaWidth
-
-    private val _scaleAreaHeight = mutableStateOf(0.0f)
-    val scaleAreaHeight: State<Float> = _scaleAreaHeight
 
     private var recentlyDeletedNote: Measurement? = null
     // Flow
@@ -62,6 +56,8 @@ class RulerViewModel @Inject constructor(
 
     init {
         getMeasurements(MeasurementOrder.Date(OrderType.Descending))
+        getScale(application.applicationContext)
+        getScaleAreaSize(application.applicationContext)
     }
 
     fun onEvent(event: RulerEvent) {
@@ -79,7 +75,7 @@ class RulerViewModel @Inject constructor(
                     }
                 }
                 is RulerEvent.SetScale -> {
-                    _lengthScale.value = lengthScale.value.copy(
+                    _state.value = state.value.copy(
                         scale = event.scale
                     )
                     _eventFlow.emit(
@@ -108,8 +104,8 @@ class RulerViewModel @Inject constructor(
                     }
                 }
                 is RulerEvent.SwitchScale -> {
-                    _lengthScale.value = lengthScale.value.copy(
-                        scale = when(_lengthScale.value.scale) {
+                    _state.value = state.value.copy(
+                        scale = when(_state.value.scale) {
                             RulerScale.Centimeter -> {
                                 RulerScale.Inch
                             }
@@ -118,6 +114,7 @@ class RulerViewModel @Inject constructor(
                             }
                         }
                     )
+                    SharedPref.setLengthScale(_state.value.scale, getApplication<Application>().applicationContext)
                 }
                 is RulerEvent.SaveMeasurement -> {
                     viewModelScope.launch {
@@ -151,8 +148,10 @@ class RulerViewModel @Inject constructor(
                     }
                 }
                 is RulerEvent.ChangeScaleAreaSize -> {
-                    _scaleAreaWidth.value = event.size.width
-                    _scaleAreaHeight.value = event.size.height
+                    _state.value = _state.value.copy(
+                        scaleAreaSize = event.size
+                    )
+                    SharedPref.setScaleAreaSize(_state.value.scaleAreaSize, getApplication<Application>().applicationContext)
                 }
                 else -> {}
             }
@@ -169,5 +168,17 @@ class RulerViewModel @Inject constructor(
                 )
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun getScale(context: Context) {
+        _state.value = state.value.copy(
+            scale = SharedPref.getLengthScale(context = context)
+        )
+    }
+
+    private fun getScaleAreaSize(context: Context) {
+        _state.value = state.value.copy(
+            scaleAreaSize = SharedPref.getScaleAreaSize(context = context)
+        )
     }
 }

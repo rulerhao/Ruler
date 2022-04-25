@@ -26,7 +26,7 @@ fun GestureScreen(
 ) {
     val context = LocalContext.current
 
-    val lengthScale = viewModel.lengthScale
+    val lengthScale = viewModel.state
 
     val ACTION_IDLE = 0
     val ACTION_DOWN = 1

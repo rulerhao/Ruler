@@ -202,7 +202,7 @@ fun MeasurementScreen(
                     modifier = Modifier
                         .align(alignment = Alignment.Bottom),
                     text = "%.2f".format(
-                        if (viewModel.lengthScale.value.scale == RulerScale.Centimeter) measurement.width else LengthScaleChanger.cmToIn(
+                        if (viewModel.state.value.scale == RulerScale.Centimeter) measurement.width else LengthScaleChanger.cmToIn(
                             measurement.width
                         )
                     ),
@@ -214,7 +214,7 @@ fun MeasurementScreen(
                 Text(
                     modifier = Modifier
                         .align(alignment = Alignment.Bottom),
-                    text = when (viewModel.lengthScale.value.scale) {
+                    text = when (viewModel.state.value.scale) {
                         RulerScale.Inch -> "IN"
                         RulerScale.Centimeter -> "CM"
                     },
@@ -230,7 +230,7 @@ fun MeasurementScreen(
                     modifier = Modifier
                         .align(alignment = Alignment.Bottom),
                     text = "%.2f".format(
-                        if (viewModel.lengthScale.value.scale == RulerScale.Centimeter) measurement.height else LengthScaleChanger.cmToIn(
+                        if (viewModel.state.value.scale == RulerScale.Centimeter) measurement.height else LengthScaleChanger.cmToIn(
                             measurement.height
                         )
                     ),
@@ -242,7 +242,7 @@ fun MeasurementScreen(
                 Text(
                     modifier = Modifier
                         .align(alignment = Alignment.Bottom),
-                    text = when (viewModel.lengthScale.value.scale) {
+                    text = when (viewModel.state.value.scale) {
                         RulerScale.Inch -> "IN"
                         RulerScale.Centimeter -> "CM"
                     },

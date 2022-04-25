@@ -28,9 +28,7 @@ import kotlin.math.abs
 fun ScaleScreen(
     viewModel: RulerViewModel = hiltViewModel()
 ) {
-//    val context = LocalContext.current
-
-    val lengthScale = viewModel.lengthScale
+    val lengthScale = viewModel.state
 
     val animateFloat = remember {
         Animatable(
@@ -296,6 +294,8 @@ fun PreviewBlend(
 ) {
     val context = LocalContext.current
 
+    val state = viewModel.state.value
+
     var positionTouchDown = Offset.Unspecified
     var middlePositionWhenTouchDown = Offset.Unspecified
 
@@ -303,9 +303,9 @@ fun PreviewBlend(
      * Scale area
      */
     var positionX1 by remember { mutableStateOf(200) }
-    var positionX2 by remember { mutableStateOf(400) }
+    var positionX2 by remember { mutableStateOf(positionX1 + (state.scaleAreaSize.width * ScreenMethods.getPpc(context)).toInt()) }
     var positionY1 by remember { mutableStateOf(300) }
-    var positionY2 by remember { mutableStateOf(500) }
+    var positionY2 by remember { mutableStateOf(positionY1 + (state.scaleAreaSize.height * ScreenMethods.getPpc(context)).toInt()) }
     val scaleAreaTopLeft = Offset(
         kotlin.math.min(positionX1, positionX2).toFloat(), kotlin.math.min(
             positionY1,
