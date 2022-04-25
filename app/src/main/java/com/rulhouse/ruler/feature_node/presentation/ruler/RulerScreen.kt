@@ -156,8 +156,3 @@ fun RulerScreen(
         }
     }
 }
-
-@Composable
-fun RulerSnackbar() {
-
-}
