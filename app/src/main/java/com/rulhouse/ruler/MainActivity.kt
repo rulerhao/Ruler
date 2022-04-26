@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setOrientation() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
     }
 
     private fun setSystemBar() {
