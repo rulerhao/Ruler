@@ -25,8 +25,8 @@ object SharedPref {
 
     fun getScaleAreaSize(context: Context): Size {
         val pref = context.getSharedPreferences("Ruler", Context.MODE_PRIVATE)
-        val width = pref.getFloat("ScaleAreaWidth", 200f)
-        val height = pref.getFloat("ScaleAreaHeight", 200f)
+        val width = pref.getFloat("ScaleAreaWidth", 3f)
+        val height = pref.getFloat("ScaleAreaHeight", 2f)
         return Size(width = width, height = height)
     }
 }
