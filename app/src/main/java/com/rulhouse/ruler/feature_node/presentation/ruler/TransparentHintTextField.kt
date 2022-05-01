@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +24,10 @@ fun TransparentHintTextField(
     onValueChange: (String) -> Unit,
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = true,
-    onFocusChange: (FocusState) -> Unit
+    onFocusChange: (FocusState) -> Unit,
+    onDone: () -> Unit = {
+
+    }
 ) {
     Box(
         modifier = modifier
@@ -37,7 +42,12 @@ fun TransparentHintTextField(
                 .padding(8.dp)
                 .onFocusChanged {
                     onFocusChange(it)
+                },
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onDone()
                 }
+            )
         )
         if (isHintVisible)
             Text(

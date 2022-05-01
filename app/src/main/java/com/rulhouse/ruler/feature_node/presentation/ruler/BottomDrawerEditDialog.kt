@@ -68,7 +68,11 @@ fun BottomDrawerEditDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp, end = 8.dp, top = 16.dp)
-                    .background(SecondaryColor)
+                    .background(SecondaryColor),
+                onDone = {
+                    onOkClick(titleState.value.text)
+                    onDismissRequest()
+                }
             )
             Row(
                 modifier = Modifier
