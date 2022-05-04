@@ -1,6 +1,5 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -13,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rulhouse.ruler.feature_node.presentation.ruler.util.Size
+import com.rulhouse.ruler.feature_node.presentation.ruler.bottom_drawer.HistoryDrawerScreen
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 
@@ -81,7 +80,6 @@ fun RulerScreen(
     ) {
         Box {
             ScaleScreen()
-//        GestureScreen()
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

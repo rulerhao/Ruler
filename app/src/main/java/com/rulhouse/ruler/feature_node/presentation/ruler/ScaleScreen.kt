@@ -1,6 +1,5 @@
 package com.rulhouse.ruler.feature_node.presentation.ruler
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,16 +10,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.rulhouse.ruler.activity.ScreenMethods
+import com.rulhouse.ruler.methods.ScreenMethods
 import com.rulhouse.ruler.methods.ScaleTextGetter
 import com.rulhouse.ruler.methods.ScaleTextPositionGetter
 import com.rulhouse.ruler.ui.theme.*
-import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.abs
 
 
@@ -170,7 +167,7 @@ fun PreviewBlend(
                         }
                     }
                 ) { change, dragAmount ->
-                    change.consumeAllChanges()
+                    change.consume()
 
                     if (positionTouchDown.x > middlePositionWhenTouchDown.x) {
                         positionX2 += dragAmount.x.toInt()

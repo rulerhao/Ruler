@@ -1,7 +1,6 @@
 package com.rulhouse.ruler.methods
 
 import android.content.Context
-import com.rulhouse.ruler.activity.ScreenMethods
 import com.rulhouse.ruler.feature_node.presentation.ruler.RulerScale
 
 object ScaleTextGetter {

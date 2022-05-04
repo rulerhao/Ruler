@@ -3,7 +3,6 @@ package com.rulhouse.ruler.methods
 import android.content.Context
 import android.graphics.Paint
 import androidx.compose.ui.geometry.Offset
-import com.rulhouse.ruler.activity.ScreenMethods
 
 object ScaleTextPositionGetter {
     fun topTextOffset(context: Context, paint: Paint, text: String, offset: Offset): Offset {
