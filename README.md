@@ -15,7 +15,7 @@
 
 ## Clean Architecture 
 
-[**Room**](https://developer.android.com/topic/libraries/architecture/room.html): Accessing and writing data by using Room DAOs.
+[**Room**](https://developer.android.com/topic/libraries/architecture/room.html): Accessing and writing local data by using Room DAOs.
 
 [**Hilt**](https://developer.android.com/training/dependency-injection/hilt-android): Apply measurements records dependency injection.
 
