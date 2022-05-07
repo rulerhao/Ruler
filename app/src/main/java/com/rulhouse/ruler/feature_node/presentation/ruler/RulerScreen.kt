@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rulhouse.ruler.feature_node.presentation.ruler.bottom_drawer.HistoryDrawerScreen
+import com.rulhouse.ruler.feature_node.presentation.ruler.scale_screen.ScaleScreen
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 

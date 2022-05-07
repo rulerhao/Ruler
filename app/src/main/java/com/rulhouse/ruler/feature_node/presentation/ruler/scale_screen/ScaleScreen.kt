@@ -1,5 +1,6 @@
-package com.rulhouse.ruler.feature_node.presentation.ruler
+package com.rulhouse.ruler.feature_node.presentation.ruler.scale_screen
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import com.rulhouse.ruler.feature_node.presentation.ruler.RulerEvent
+import com.rulhouse.ruler.feature_node.presentation.ruler.RulerScale
+import com.rulhouse.ruler.feature_node.presentation.ruler.RulerViewModel
 import com.rulhouse.ruler.methods.ScreenMethods
 import com.rulhouse.ruler.methods.ScaleTextGetter
 import com.rulhouse.ruler.methods.ScaleTextPositionGetter
@@ -34,39 +39,31 @@ fun ScaleScreen(
 @Composable
 fun PreviewBlend(
     lengthScale: RulerScale = RulerScale.Centimeter,
-    viewModel: RulerViewModel = hiltViewModel()
+    viewModel: ScaleScreenViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
     val state = viewModel.state.value
 
-    var positionTouchDown = Offset.Unspecified
-    var middlePositionWhenTouchDown = Offset.Unspecified
-
     /**
      * Scale area
      */
-    var positionX1 by remember { mutableStateOf(200) }
-    var positionX2 by remember { mutableStateOf(positionX1 + (state.scaleAreaSize.width * ScreenMethods.getPpc(context)).toInt()) }
-    var positionY1 by remember { mutableStateOf(300) }
-    var positionY2 by remember { mutableStateOf(positionY1 + (state.scaleAreaSize.height * ScreenMethods.getPpc(context)).toInt()) }
     val scaleAreaTopLeft = Offset(
-        kotlin.math.min(positionX1, positionX2).toFloat(), kotlin.math.min(
-            positionY1,
-            positionY2
+        kotlin.math.min(
+            state.left,
+            state.right
+        ).toFloat(),
+        kotlin.math.min(
+            state.top,
+            state.bottom
         ).toFloat()
     )
+
     val scaleAreaSize =
-        Size(abs(positionX1 - positionX2).toFloat(), abs(positionY1 - positionY2).toFloat()).also {
-            viewModel.onEvent(
-                RulerEvent.ChangeScaleAreaSize(
-                    com.rulhouse.ruler.feature_node.presentation.ruler.util.Size(
-                        it.width / ScreenMethods.getPpc(context),
-                        it.height / ScreenMethods.getPpc(context)
-                    )
-                )
-            )
-        }
+        Size(
+            width = abs(state.left - state.right).toFloat(),
+            height = abs(state.top - state.bottom).toFloat()
+        )
 
     /**
      * Scale area side text
@@ -81,10 +78,11 @@ fun PreviewBlend(
         length = scaleAreaSize.width,
         scale = lengthScale
     )
-    val topTextPaint = android.graphics.Paint()
-    topTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
-    topTextPaint.textSize = scaleAreaTextSize
-    topTextPaint.color = TextOnPColor.toArgb()
+    val topTextPaint = android.graphics.Paint().apply {
+        textAlign = android.graphics.Paint.Align.RIGHT
+        textSize = scaleAreaTextSize
+        color = TextOnPColor.toArgb()
+    }
     val topTextOffset = Offset(
         x = scaleAreaTopLeft.x + scaleAreaSize.width / 2,
         y = scaleAreaTopLeft.y
@@ -104,10 +102,11 @@ fun PreviewBlend(
         length = scaleAreaSize.height,
         scale = lengthScale
     )
-    val leftTextPaint = android.graphics.Paint()
-    leftTextPaint.textAlign = android.graphics.Paint.Align.RIGHT
-    leftTextPaint.textSize = scaleAreaTextSize
-    leftTextPaint.color = TextOnPColor.toArgb()
+    val leftTextPaint = android.graphics.Paint().apply {
+        textAlign = android.graphics.Paint.Align.RIGHT
+        textSize = scaleAreaTextSize
+        color = TextOnPColor.toArgb()
+    }
     val leftTextOffset = Offset(
         x = scaleAreaTopLeft.x,
         y = scaleAreaTopLeft.y + scaleAreaSize.height / 2
@@ -132,15 +131,18 @@ fun PreviewBlend(
      */
     val scaleTextSize = 60f
     // Scale width line text
-    val scaleWidthLineTextPaint = android.graphics.Paint()
-    scaleWidthLineTextPaint.textAlign = android.graphics.Paint.Align.CENTER
-    scaleWidthLineTextPaint.textSize = scaleTextSize
-    scaleWidthLineTextPaint.color = TextOnPColor.toArgb()
+    val scaleWidthLineTextPaint = android.graphics.Paint().apply {
+        textAlign = android.graphics.Paint.Align.CENTER
+        textSize = scaleTextSize
+        color = TextOnPColor.toArgb()
+    }
     // Scale height line text
-    val scaleHeightLineTextPaint = android.graphics.Paint()
-    scaleHeightLineTextPaint.textAlign = android.graphics.Paint.Align.LEFT
-    scaleHeightLineTextPaint.textSize = scaleTextSize
-    scaleHeightLineTextPaint.color = TextOnPColor.toArgb()
+    val scaleHeightLineTextPaint = android.graphics.Paint().apply {
+        textAlign = android.graphics.Paint.Align.LEFT
+        textSize = scaleTextSize
+        color = TextOnPColor.toArgb()
+    }
+
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -148,52 +150,17 @@ fun PreviewBlend(
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDragStart = {
-                        positionTouchDown = it
-                        middlePositionWhenTouchDown = Offset(
-                            ((positionX1 + positionX2) / 2).toFloat(),
-                            ((positionY1 + positionY2) / 2).toFloat()
-                        )
+                        viewModel.onEvent(ScaleScreenEvent.OnDragStart(it))
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+
+                        viewModel.onEvent(ScaleScreenEvent.OnDrag(dragAmount, context))
                     },
                     onDragEnd = {
-                        if (positionX1 > positionX2) {
-                            val temp = positionX2
-                            positionX2 = positionX1
-                            positionX1 = temp
-                        }
-                        if (positionY1 > positionY2) {
-                            val temp = positionY2
-                            positionY2 = positionY1
-                            positionY1 = temp
-                        }
+                        viewModel.onEvent(ScaleScreenEvent.OnDragEnd)
                     }
-                ) { change, dragAmount ->
-                    change.consume()
-
-                    if (positionTouchDown.x > middlePositionWhenTouchDown.x) {
-                        positionX2 += dragAmount.x.toInt()
-                        if (positionX2 > ScreenMethods.getWidth(context)) positionX2 =
-                            ScreenMethods.getWidth(context)
-                    } else {
-                        positionX1 += dragAmount.x.toInt()
-                        if (positionX1 < 0) positionX1 = 0
-                    }
-                    if (positionTouchDown.y > middlePositionWhenTouchDown.y) {
-                        positionY2 += dragAmount.y.toInt()
-                        if (positionY2 > ScreenMethods.getHeight(context)) positionY2 =
-                            ScreenMethods.getHeight(context)
-                    } else {
-                        positionY1 += dragAmount.y.toInt()
-                        if (positionY1 < 0) positionY1 = 0
-                    }
-                    viewModel.onEvent(
-                        RulerEvent.ChangeScaleAreaSize(
-                            com.rulhouse.ruler.feature_node.presentation.ruler.util.Size(
-                                abs(positionX2 - positionX1) / ScreenMethods.getPpc(context),
-                                abs(positionY2 - positionY1) / ScreenMethods.getPpc(context)
-                            )
-                        )
-                    )
-                }
+                )
             }
     ) {
         with(drawContext.canvas.nativeCanvas) {
